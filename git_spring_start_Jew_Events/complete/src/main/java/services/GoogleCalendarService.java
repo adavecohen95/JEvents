@@ -14,6 +14,7 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.EventDateTime;
 import com.google.api.services.calendar.model.Events;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,21 +23,18 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 class GoogleCalendarSync {
-  public GoogleCalendarSync(Calendar cal) {
+  public GoogleCalendarSync(Calendar cal, String calendarId) {
     _calendar = cal;
-  }
+    _calendarId = calendarId;
+ }
 
-  public void UpdateGoogleEvent(AbstractCalendarEvent event) {
-    // Find the google event corresponding to this event and replace it with the
-    // new event details.
-  }
-
-  public void CreateGoogleEvent(AbstractCalendarEvent event) throws IOException {
-    _calendar.events().list("primary");
-  }
+ public List<AbstractCalendarEvent> ListEvents() {
+   return new ArrayList<AbstractCalendarEvent>(_facebookIdMap.values());
+ }
 
   // Events with facebook information get added to the GoogleCalendarSync, which
   public void AddEventsFromFacebook(List<AbstractCalendarEvent> events) throws IOException {
@@ -57,6 +55,57 @@ class GoogleCalendarSync {
     }
   }
 
+  private void UpdateGoogleEvent(AbstractCalendarEvent event) throws IOException {
+    // Find the google event corresponding to this event and replace it with the
+    // new event details.
+    DateTime now = new DateTime(System.currentTimeMillis());
+    Events events = _calendar.events().list(_calendarId)
+            .setMaxResults(10000)
+            .setTimeMin(now)
+            .setOrderBy("startTime")
+            .setSingleEvents(true)
+            .execute();
+    List<Event> items = events.getItems();
+    if (items.isEmpty()) {
+      System.out.println("No upcoming events found. Didn't update anything");
+      return;
+    }
+    System.out.println("Upcoming events");
+    for (Event e : items) {
+      if (e.getId().compareTo(event.googleEventId) == 0) {
+        EventDateTime startTime = new EventDateTime();
+        startTime.setDateTime(event.startTime);
+        EventDateTime endTime = new EventDateTime();
+        endTime.setDateTime(event.endTime);
+        // Update event.
+        e.setSummary(event.title);
+        e.setDescription(event.description);
+        e.setStart(startTime);
+        e.setEnd(endTime);
+        System.out.println("Creating new event! Pre-creation ID: " + e.getId());
+        _calendar.events().patch(_calendarId, event.googleEventId, e).execute();
+        event.googleEventId = e.getId();
+        System.out.println("New event ID: " + e.getId());
+        event.googleEventEtag = e.getEtag();
+        event.googleEventUrl = e.getHtmlLink();
+        return;
+      }
+    }
+  }
+
+  private void CreateGoogleEvent(AbstractCalendarEvent event) throws IOException {
+    Event e = new Event();
+    e.setSummary(event.title);
+    e.setDescription(event.description);
+    EventDateTime startTime = new EventDateTime();
+    startTime.setDateTime(event.startTime);
+    e.setStart(startTime);
+    EventDateTime endTime = new EventDateTime();
+    endTime.setDateTime(event.endTime);
+    e.setEnd(endTime);
+    _calendar.events().insert(_calendarId, e).execute();
+  }
+
   // Compares whether two elements have the same (startTime, endTime,
   // description, title).
   private Boolean CompareEventDetails(AbstractCalendarEvent e1, AbstractCalendarEvent e2) {
@@ -69,12 +118,27 @@ class GoogleCalendarSync {
   // facebook id -> event.
   private HashMap<String, AbstractCalendarEvent> _facebookIdMap;
   private Calendar _calendar;
+  private String _calendarId;
 }
 
 public class GoogleCalendarService {
   private static final String APPLICATION_NAME = "Google Calendar API Java Quickstart";
   private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
   private static final String TOKENS_DIRECTORY_PATH = "tokens";
+
+  private GoogleCalendarSync _calendarSynchronizer;
+
+  private GoogleCalendarService(GoogleCalendarSync synchronizer) {
+    _calendarSynchronizer = synchronizer;
+  }
+
+  public void AddEventsFromFacebook(List<AbstractCalendarEvent> events) throws IOException {
+    _calendarSynchronizer.AddEventsFromFacebook(events);
+  }
+
+  public List<AbstractCalendarEvent> ListEvents() {
+    return _calendarSynchronizer.ListEvents();
+  }
 
   /**
    * Global instance of the scopes required by this quickstart. If modifying these scopes, delete
@@ -112,37 +176,13 @@ public class GoogleCalendarService {
     return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
   }
 
-  public static void SyncEvents(String... args) throws IOException, GeneralSecurityException {
+  public static GoogleCalendarService CreateSyncService() throws IOException, GeneralSecurityException {
     // Build a new authorized API client service.
     final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
     Calendar service =
         new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
             .setApplicationName(APPLICATION_NAME)
             .build();
-
-    // List the next 10 events from the primary calendar.
-    DateTime now = new DateTime(System.currentTimeMillis());
-    Events events =
-        service
-            .events()
-            .list("bsp4pl7nrmbt1merbkuehqluj4@group.calendar.google.com")
-            .setMaxResults(100)
-            .setTimeMin(now)
-            .setOrderBy("startTime")
-            .setSingleEvents(true)
-            .execute();
-    List<Event> items = events.getItems();
-    if (items.isEmpty()) {
-      System.out.println("No upcoming events found.");
-    } else {
-      System.out.println("Upcoming events");
-      for (Event event : items) {
-        DateTime start = event.getStart().getDateTime();
-        if (start == null) {
-          start = event.getStart().getDate();
-        }
-        System.out.printf("%s (%s)\n", event.getSummary(), start);
-      }
-    }
+    return new GoogleCalendarService(new GoogleCalendarSync(service, "bsp4pl7nrmbt1merbkuehqluj4@group.calendar.google.com"));
   }
 }
