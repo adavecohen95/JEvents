@@ -1,0 +1,4 @@
+Data Collected
+The data collected in the application is stricly public facebook event information that is then collected and
+placed into a calendar for better viewing. No data of any kind is stored on our servers. 
+

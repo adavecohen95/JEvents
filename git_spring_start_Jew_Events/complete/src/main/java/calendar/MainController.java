@@ -20,12 +20,6 @@ public class MainController {
                             String.format(template, name));
     }
 
-    @RequestMapping("/borat")
-    public TestObject borat(@RequestParam(value="animal", defaultValue="Dog") String animal) {
-        return new TestObject(counter.incrementAndGet(),
-                String.format(boratTemplate, animal));
-    }
-
     @RequestMapping("/serviceCall")
     public TestObject fbServiceCall() {
         return new TestObject(counter.incrementAndGet(),
