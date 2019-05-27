@@ -17,3 +17,4 @@ README.html
 .idea
 git_spring_start_Jew_Events/complete/build/*
 git_spring_start_Jew_Events/complete/.syntastic_javac_config
+git_spring_start_Jew_Events/complete/src/main/java/resources/credentials.json
