@@ -16,3 +16,4 @@ README.html
 *.iml
 .idea
 git_spring_start_Jew_Events/complete/build/*
+git_spring_start_Jew_Events/complete/.syntastic_javac_config
