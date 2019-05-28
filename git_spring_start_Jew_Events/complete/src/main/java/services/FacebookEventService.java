@@ -5,64 +5,50 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.net.HttpURLConnection;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.utils.URIBuilder;
 
 public class FacebookEventService {
 
+    private static final String KEY_API = "EAAHZCDnb8thQBAMpZA3XS6qfS4i5uc9WMlAk79f7pkx1fUBw5f2sZBbn6o54zcTsZChObQeIk1tbZAck57OCXR09fq832YbGoBmwM38f0EWEMX6KENbpY32ZA128PU5LYRj4GAVc6LM5VWXfvvGQB1YpMVxeUVMMNZC0ZBy5YZB0o1BaqRwn8ZCckdYtfoqyiXZBZB2D1R22sP7LSAZDZD";
+    private static final String GRAPH_API_URL = "https://graph.facebook.com/v3.3/2422730031089996/events";
+    private URIBuilder fbURI;
+    private HttpURLConnection con;
+    private int responseCode;
 
-    public String testMethod() {
-        return "Service calls work ";
-    }
-
-
-    private final String KEY_API = "EAAHZCDnb8thQBADVAWB2gXjBoa1va4dIab96PjRM3bLv2Vv4Y2KHRrhp0usYUYkEh6k0PZCS7bx9ThQ8N6Gm9CuQhdBnDGpqPoojZCBGHeYZCa53rp5HknPynMPHwuEtnutaPCAZC81s9rfnndlPZBGN2XzkZB4jwZCfOYqUZBwhQSkF90s3liKRl9Jo8ZAYzOrZAVV23zoZA5R4IAZDZD";
-    private final String GRAPH_API_URL = "https://graph.facebook.com/v3.3/2422730031089996/events";
-   // ?pretty=0&type=not_replied&limit=200&access_token=
-
-    public void getEvents() {
-
-        URL graphUrl = null;
-        HttpURLConnection con = null;
-        int responseCode = 0;
-        try {
-            graphUrl  = new URL(GRAPH_API_URL);
-        } catch(MalformedURLException e) {
-
-        }
+    public void getEvents() throws IOException, URISyntaxException {
 
         try {
-            con = (HttpURLConnection) graphUrl.openConnection();
-        } catch (IOException e) {
+            fbURI  = new URIBuilder(GRAPH_API_URL)
+            .addParameter("pretty","1")
+            .addParameter("type","not_replied")
+            .addParameter("limit","200")
+            .addParameter("access_token",KEY_API);
 
-        }
+            System.out.println(fbURI.toString());
 
-        try {
+            URL url = new URL(fbURI.toString());
+            con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
-        }catch (ProtocolException e) {
 
-        }
-
-        con.setRequestProperty("pretty","0");
-        con.setRequestProperty("type","not_replied");
-        con.setRequestProperty("limit","200");
-        con.setRequestProperty("access_token",KEY_API);
-
-        try {
             responseCode = con.getResponseCode();
+            String text = IOUtils.toString(con.getInputStream(), StandardCharsets.UTF_8.name());
+            System.out.println(text);
 
+        } catch (URISyntaxException e) {
+            System.out.println("URI Syntax is incorrect");
+            throw e;
 
-           String text = IOUtils.toString(con.getInputStream(), StandardCharsets.UTF_8.name());
         } catch (IOException e) {
-
+            System.out.println("Failed to create a URL Object or failed to get get input from facebook ");
+            System.out.println("Response Code: " + responseCode);
+            throw e;
         }
-
-
-
+    }
+    public static void main(String args[]) throws Exception {
+        new FacebookEventService().getEvents();
     }
 
 

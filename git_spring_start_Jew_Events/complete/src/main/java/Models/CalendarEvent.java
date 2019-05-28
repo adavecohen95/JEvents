@@ -1,8 +1,8 @@
-package services;
+package Models;
 
 import com.google.api.client.util.DateTime;
 
-public class AbstractCalendarEvent {
+public class CalendarEvent {
   public String facebookEventId;
   public String googleEventId;
   // Use this to detect if the event has been modified. Same event ID but

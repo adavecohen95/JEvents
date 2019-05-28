@@ -1,7 +1,7 @@
 package calendar;
 
 import java.util.List;
-import services.AbstractCalendarEvent;
+import Models.AbstractCalendarEvent;
 
 public class TestObject {
 

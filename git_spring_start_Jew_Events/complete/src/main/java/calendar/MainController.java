@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.security.GeneralSecurityException;
 import org.springframework.web.bind.annotation.RestController;
-import services.AbstractCalendarEvent;
+import Models.AbstractCalendarEvent;
 import services.FacebookEventService;
 import services.GoogleCalendarService;
 
@@ -48,13 +48,6 @@ public class MainController {
       List<AbstractCalendarEvent> events = googleEventService.ListEvents();
       return new TestObject(counter.incrementAndGet(), "Events in sync", events);
 
-    }
-
-
-    @RequestMapping("/serviceCall")
-    public TestObject fbServiceCall() {
-        return new TestObject(counter.incrementAndGet(),
-                String.format(template, facebookEventService.testMethod()), new ArrayList<AbstractCalendarEvent>());
     }
 
 }
