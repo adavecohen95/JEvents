@@ -17,3 +17,8 @@ README.html
 *.iml
 .idea
 out/
+.syntastic_javac_config
+complete.iml
+complete.ipr
+complete.iws
+
