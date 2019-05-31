@@ -1,15 +1,15 @@
 package calendar;
 
 import java.util.List;
-import Models.AbstractCalendarEvent;
+import models.CalendarEvent;
 
 public class TestObject {
 
     private final long id;
     private final String content;
-    private final List<AbstractCalendarEvent> _events;
+    private final List<CalendarEvent> _events;
 
-    public TestObject(long id, String content, List<AbstractCalendarEvent> events) {
+    public TestObject(long id, String content, List<CalendarEvent> events) {
         this.id = id;
         this.content = content;
         this._events = events;
@@ -23,7 +23,7 @@ public class TestObject {
         return content;
     }
 
-    public List<AbstractCalendarEvent> getEvents() {
+    public List<CalendarEvent> getEvents() {
       return _events;
     }
 }

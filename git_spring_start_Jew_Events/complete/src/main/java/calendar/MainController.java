@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.security.GeneralSecurityException;
 import org.springframework.web.bind.annotation.RestController;
-import Models.AbstractCalendarEvent;
+import models.CalendarEvent;
 import services.FacebookEventService;
 import services.GoogleCalendarService;
 
@@ -24,7 +24,7 @@ public class MainController {
     @RequestMapping("/greeting")
     public TestObject greeting(@RequestParam(value="name", defaultValue="World") String name) {
         return new TestObject(counter.incrementAndGet(),
-                            String.format(template, name), new ArrayList<AbstractCalendarEvent>(){});
+                            String.format(template, name), new ArrayList<CalendarEvent>(){});
     }
 
     @RequestMapping("/sync")
@@ -36,16 +36,16 @@ public class MainController {
         return new TestObject(
             counter.incrementAndGet(),
             "IO Error accessing Google Calendar",
-            new ArrayList<AbstractCalendarEvent>() {});
+            new ArrayList<CalendarEvent>() {});
         } catch (GeneralSecurityException e) {
           return new TestObject(
               counter.incrementAndGet(),
               "GeneralSecurityException accessing Google Calendar",
-              new ArrayList<AbstractCalendarEvent>() {});
+              new ArrayList<CalendarEvent>() {});
         }
       }
       
-      List<AbstractCalendarEvent> events = googleEventService.ListEvents();
+      List<CalendarEvent> events = googleEventService.ListEvents();
       return new TestObject(counter.incrementAndGet(), "Events in sync", events);
 
     }

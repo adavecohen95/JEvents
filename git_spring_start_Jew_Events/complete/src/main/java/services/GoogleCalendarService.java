@@ -1,6 +1,6 @@
 package services;
 
-import Models.AbstractCalendarEvent;
+import models.CalendarEvent;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -33,16 +33,16 @@ class GoogleCalendarSync {
     _calendarId = calendarId;
  }
 
- public List<AbstractCalendarEvent> ListEvents() {
-   return new ArrayList<AbstractCalendarEvent>(_facebookIdMap.values());
+ public List<CalendarEvent> ListEvents() {
+   return new ArrayList<CalendarEvent>(_facebookIdMap.values());
  }
 
   // Events with facebook information get added to the GoogleCalendarSync, which
-  public void AddEventsFromFacebook(List<AbstractCalendarEvent> events) throws IOException {
-    for (AbstractCalendarEvent e : events) {
+  public void AddEventsFromFacebook(List<CalendarEvent> events) throws IOException {
+    for (CalendarEvent e : events) {
       if (_facebookIdMap.containsKey(e.facebookEventId)) {
         // If the event already exists, update details and then continue.
-        AbstractCalendarEvent existingEvent = _facebookIdMap.get(e.facebookEventId);
+        CalendarEvent existingEvent = _facebookIdMap.get(e.facebookEventId);
         if (!CompareEventDetails(existingEvent, e)) {
           _facebookIdMap.put(e.facebookEventId, e);
           UpdateGoogleEvent(existingEvent);
@@ -56,7 +56,7 @@ class GoogleCalendarSync {
     }
   }
 
-  private void UpdateGoogleEvent(AbstractCalendarEvent event) throws IOException {
+  private void UpdateGoogleEvent(CalendarEvent event) throws IOException {
     // Find the google event corresponding to this event and replace it with the
     // new event details.
     DateTime now = new DateTime(System.currentTimeMillis());
@@ -94,7 +94,7 @@ class GoogleCalendarSync {
     }
   }
 
-  private void CreateGoogleEvent(AbstractCalendarEvent event) throws IOException {
+  private void CreateGoogleEvent(CalendarEvent event) throws IOException {
     Event e = new Event();
     e.setSummary(event.title);
     e.setDescription(event.description);
@@ -109,7 +109,7 @@ class GoogleCalendarSync {
 
   // Compares whether two elements have the same (startTime, endTime,
   // description, title).
-  private Boolean CompareEventDetails(AbstractCalendarEvent e1, AbstractCalendarEvent e2) {
+  private Boolean CompareEventDetails(CalendarEvent e1, CalendarEvent e2) {
     return (e1.startTime.hashCode() == e2.startTime.hashCode())
         && (e1.endTime.hashCode() == e2.endTime.hashCode())
         && e1.description.compareTo(e2.description) == 0
@@ -117,7 +117,7 @@ class GoogleCalendarSync {
   }
 
   // facebook id -> event.
-  private HashMap<String, AbstractCalendarEvent> _facebookIdMap;
+  private HashMap<String, CalendarEvent> _facebookIdMap;
   private Calendar _calendar;
   private String _calendarId;
 }
@@ -133,11 +133,11 @@ public class GoogleCalendarService {
     _calendarSynchronizer = synchronizer;
   }
 
-  public void AddEventsFromFacebook(List<AbstractCalendarEvent> events) throws IOException {
+  public void AddEventsFromFacebook(List<CalendarEvent> events) throws IOException {
     _calendarSynchronizer.AddEventsFromFacebook(events);
   }
 
-  public List<AbstractCalendarEvent> ListEvents() {
+  public List<CalendarEvent> ListEvents() {
     return _calendarSynchronizer.ListEvents();
   }
 
