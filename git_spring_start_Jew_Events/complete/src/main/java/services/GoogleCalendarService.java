@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -31,11 +32,11 @@ class GoogleCalendarSync {
   public GoogleCalendarSync(Calendar cal, String calendarId) {
     _calendar = cal;
     _calendarId = calendarId;
- }
+  }
 
- public List<CalendarEvent> ListEvents() {
-   return new ArrayList<CalendarEvent>(_facebookIdMap.values());
- }
+  public List<CalendarEvent> ListEvents() {
+    return new ArrayList<CalendarEvent>(_facebookIdMap.values());
+  }
 
   // Events with facebook information get added to the GoogleCalendarSync, which
   public void AddEventsFromFacebook(List<CalendarEvent> events) throws IOException {
@@ -60,7 +61,10 @@ class GoogleCalendarSync {
     // Find the google event corresponding to this event and replace it with the
     // new event details.
     DateTime now = new DateTime(System.currentTimeMillis());
-    Events events = _calendar.events().list(_calendarId)
+    Events events =
+        _calendar
+            .events()
+            .list(_calendarId)
             .setMaxResults(10000)
             .setTimeMin(now)
             .setOrderBy("startTime")
@@ -177,13 +181,15 @@ public class GoogleCalendarService {
     return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
   }
 
-  public static GoogleCalendarService CreateSyncService() throws IOException, GeneralSecurityException {
+  public static GoogleCalendarService CreateSyncService()
+      throws IOException, GeneralSecurityException {
     // Build a new authorized API client service.
     final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
     Calendar service =
         new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
             .setApplicationName(APPLICATION_NAME)
             .build();
-    return new GoogleCalendarService(new GoogleCalendarSync(service, "bsp4pl7nrmbt1merbkuehqluj4@group.calendar.google.com"));
+    return new GoogleCalendarService(
+        new GoogleCalendarSync(service, "bsp4pl7nrmbt1merbkuehqluj4@group.calendar.google.com"));
   }
 }
