@@ -1,7 +1,6 @@
 package services;
 
 import models.CalendarEvent;
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
@@ -27,6 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.core.io.ClassPathResource;
 
 class GoogleCalendarSync {
   public GoogleCalendarSync(Calendar cal, String calendarId) {
@@ -132,16 +132,25 @@ public class GoogleCalendarService {
   private static final String TOKENS_DIRECTORY_PATH = "tokens";
 
   private GoogleCalendarSync _calendarSynchronizer;
+  private AuthorizationCodeInstalledApp _authorization;
 
-  private GoogleCalendarService(GoogleCalendarSync synchronizer) {
-    _calendarSynchronizer = synchronizer;
+  public GoogleCalendarService() throws GeneralSecurityException, IOException {
+    final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+    _authorization = getAuthorization(HTTP_TRANSPORT);
+    _calendarSynchronizer = null;
   }
 
-  public void AddEventsFromFacebook(List<CalendarEvent> events) throws IOException {
+  public void AddEventsFromFacebook(List<CalendarEvent> events) throws IOException, GeneralSecurityException {
+    if (_calendarSynchronizer == null) {
+      throw new GeneralSecurityException("Need to authorize w/ user first before running AddEventsFromFacebook()!");
+    }
     _calendarSynchronizer.AddEventsFromFacebook(events);
   }
 
-  public List<CalendarEvent> ListEvents() {
+  public List<CalendarEvent> ListEvents() throws GeneralSecurityException, IOException {
+    if (_calendarSynchronizer == null) {
+      throw new GeneralSecurityException("Need to authorize w/ user first before running AddEventsFromFacebook()!");
+    }
     return _calendarSynchronizer.ListEvents();
   }
 
@@ -150,9 +159,9 @@ public class GoogleCalendarService {
    * your previously saved tokens/ folder.
    */
   private static final List<String> SCOPES =
-      Collections.singletonList(CalendarScopes.CALENDAR_READONLY);
+      Collections.singletonList(CalendarScopes.CALENDAR);
 
-  private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+  private static final String CREDENTIALS_FILE_PATH = "resources/credentials.json";
 
   /**
    * Creates an authorized Credential object.
@@ -161,10 +170,11 @@ public class GoogleCalendarService {
    * @return An authorized Credential object.
    * @throws IOException If the credentials.json file cannot be found.
    */
-  private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT)
+  private static AuthorizationCodeInstalledApp getAuthorization(final NetHttpTransport HTTP_TRANSPORT)
       throws IOException {
     // Load client secrets.
-    InputStream in = GoogleCalendarService.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+    // InputStream in = GoogleCalendarService.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+    InputStream in = new ClassPathResource(CREDENTIALS_FILE_PATH).getInputStream();
     if (in == null) {
       throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
     }
@@ -178,18 +188,37 @@ public class GoogleCalendarService {
             .setAccessType("offline")
             .build();
     LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-    return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+    return new AuthorizationCodeInstalledApp(flow, receiver);
   }
 
-  public static GoogleCalendarService CreateSyncService()
+  public Boolean isAuthorized() throws IOException {
+    return _authorization.getFlow().loadCredential("user") != null;
+  }
+
+  public String getAuthorizationUrl() {
+    return _authorization
+        .getFlow()
+        .newAuthorizationUrl()
+        .setScopes(SCOPES)
+        .setRedirectUri("http://127.0.0.1:8888")
+        .build();
+  }
+  
+  public Boolean isSetup() {
+    return _calendarSynchronizer == null;
+  }
+
+  public void PostAuthorizationSetup()
       throws IOException, GeneralSecurityException {
+    if (!isAuthorized()) {
+      throw new GeneralSecurityException("Need to authorize w/ user first before running setup()!");
+    }
     // Build a new authorized API client service.
     final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
     Calendar service =
-        new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
+        new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, _authorization.authorize("user"))
             .setApplicationName(APPLICATION_NAME)
             .build();
-    return new GoogleCalendarService(
-        new GoogleCalendarSync(service, "bsp4pl7nrmbt1merbkuehqluj4@group.calendar.google.com"));
+    _calendarSynchronizer = new GoogleCalendarSync(service, "bsp4pl7nrmbt1merbkuehqluj4@group.calendar.google.com");
   }
 }

@@ -30,24 +30,28 @@ public class MainController {
   }
 
   @RequestMapping("/sync")
-  public TestObject sync() {
+  public SyncResponse sync() {
     if (googleEventService == null) {
       try {
-        googleEventService = GoogleCalendarService.CreateSyncService();
+        googleEventService = new GoogleCalendarService();
       } catch (IOException e) {
-        return new TestObject(
-            counter.incrementAndGet(),
-            "IO Error accessing Google Calendar",
-            new ArrayList<CalendarEvent>() {});
+        return SyncResponse.CreateAuthNeeded("IOException: " + e);
       } catch (GeneralSecurityException e) {
-        return new TestObject(
-            counter.incrementAndGet(),
-            "GeneralSecurityException accessing Google Calendar",
-            new ArrayList<CalendarEvent>() {});
+        return SyncResponse.CreateAuthNeeded("GeneralSecurityException: " + e);
       }
     }
 
-    List<CalendarEvent> events = googleEventService.ListEvents();
-    return new TestObject(counter.incrementAndGet(), "Events in sync", events);
+    try {
+      if (!googleEventService.isAuthorized()) {
+        return SyncResponse.CreateAuthNeeded(googleEventService.getAuthorizationUrl());
+      }
+      if (!googleEventService.isSetup()) {
+        googleEventService.PostAuthorizationSetup();
+      }
+      List<CalendarEvent> events = googleEventService.ListEvents();
+      return SyncResponse.CreateSyncResponse(events);
+    } catch (Exception e) {
+      return SyncResponse.CreateAuthNeeded("Error: " + e);
+    }
   }
 }
