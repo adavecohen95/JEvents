@@ -1,8 +1,9 @@
 package calendar;
 
-import models.CalendarEvent;
 import java.util.ArrayList;
 import java.util.List;
+import models.CalendarEvent;
+
 
 public class SyncResponse {
 

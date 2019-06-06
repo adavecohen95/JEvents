@@ -1,6 +1,5 @@
 package services;
 
-import models.CalendarEvent;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
@@ -24,9 +23,10 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.List;
+import models.CalendarEvent;
 import org.springframework.core.io.ClassPathResource;
+
 
 class GoogleCalendarSync {
   public GoogleCalendarSync(Calendar cal, String calendarId) {
@@ -61,15 +61,13 @@ class GoogleCalendarSync {
     // Find the google event corresponding to this event and replace it with the
     // new event details.
     DateTime now = new DateTime(System.currentTimeMillis());
-    Events events =
-        _calendar
-            .events()
-            .list(_calendarId)
-            .setMaxResults(10000)
-            .setTimeMin(now)
-            .setOrderBy("startTime")
-            .setSingleEvents(true)
-            .execute();
+    Events events = _calendar.events()
+        .list(_calendarId)
+        .setMaxResults(10000)
+        .setTimeMin(now)
+        .setOrderBy("startTime")
+        .setSingleEvents(true)
+        .execute();
     List<Event> items = events.getItems();
     if (items.isEmpty()) {
       System.out.println("No upcoming events found. Didn't update anything");
@@ -114,10 +112,8 @@ class GoogleCalendarSync {
   // Compares whether two elements have the same (startTime, endTime,
   // description, title).
   private Boolean CompareEventDetails(CalendarEvent e1, CalendarEvent e2) {
-    return (e1.startTime.hashCode() == e2.startTime.hashCode())
-        && (e1.endTime.hashCode() == e2.endTime.hashCode())
-        && e1.description.compareTo(e2.description) == 0
-        && e1.title.compareTo(e2.title) == 0;
+    return (e1.startTime.hashCode() == e2.startTime.hashCode()) && (e1.endTime.hashCode() == e2.endTime.hashCode())
+        && e1.description.compareTo(e2.description) == 0 && e1.title.compareTo(e2.title) == 0;
   }
 
   // facebook id -> event.
@@ -158,8 +154,7 @@ public class GoogleCalendarService {
    * Global instance of the scopes required by this quickstart. If modifying these scopes, delete
    * your previously saved tokens/ folder.
    */
-  private static final List<String> SCOPES =
-      Collections.singletonList(CalendarScopes.CALENDAR);
+  private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR);
 
   private static final String CREDENTIALS_FILE_PATH = "resources/credentials.json";
 
@@ -178,13 +173,12 @@ public class GoogleCalendarService {
     if (in == null) {
       throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
     }
-    GoogleClientSecrets clientSecrets =
-        GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+    GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
     // Build flow and trigger user authorization request.
     GoogleAuthorizationCodeFlow flow =
-        new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-            .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
+        new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets,
+            SCOPES).setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
             .setAccessType("offline")
             .build();
     LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
@@ -196,29 +190,26 @@ public class GoogleCalendarService {
   }
 
   public String getAuthorizationUrl() {
-    return _authorization
-        .getFlow()
+    return _authorization.getFlow()
         .newAuthorizationUrl()
         .setScopes(SCOPES)
         .setRedirectUri("http://127.0.0.1:8888")
         .build();
   }
-  
+
   public Boolean isSetup() {
     return _calendarSynchronizer == null;
   }
 
-  public void PostAuthorizationSetup()
-      throws IOException, GeneralSecurityException {
+  public void PostAuthorizationSetup() throws IOException, GeneralSecurityException {
     if (!isAuthorized()) {
       throw new GeneralSecurityException("Need to authorize w/ user first before running setup()!");
     }
     // Build a new authorized API client service.
     final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
     Calendar service =
-        new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, _authorization.authorize("user"))
-            .setApplicationName(APPLICATION_NAME)
-            .build();
+        new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, _authorization.authorize("user")).setApplicationName(
+            APPLICATION_NAME).build();
     _calendarSynchronizer = new GoogleCalendarSync(service, "bsp4pl7nrmbt1merbkuehqluj4@group.calendar.google.com");
   }
 }

@@ -1,0 +1,86 @@
+package services.facebookServices;
+
+import com.google.gson.Gson;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import models.FacebookResposne;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.client.utils.URIBuilder;
+
+//All print statements will be converted to log statements
+
+public class FacebookGraphService {
+
+  private URIBuilder fbURI;
+  private HttpURLConnection con;
+  private int responseCode;
+
+  private String _authToken;
+  private String _graphUrl;
+  private Map<String, String> _parameters;
+  private int _goodResponse;
+
+  public FacebookGraphService(String authToken, String graphUrl, String userId, Map<String, String> parameters) {
+    this._authToken = authToken;
+    this._graphUrl = String.format(graphUrl, userId);
+    this._parameters = parameters;
+  }
+
+  private URL createURL() throws URISyntaxException, MalformedURLException {
+
+    try {
+      fbURI = new URIBuilder(_graphUrl).addParameter("access_token", _authToken);
+
+      _parameters.keySet().forEach(key -> {
+        fbURI.addParameter(key, _parameters.get(key));
+      });
+
+      System.out.println("[INFO] Facebook GET URL: " + fbURI.toString());
+      return new URL(fbURI.toString());
+    } catch (URISyntaxException e) {
+      System.out.println("[EXCEPTION] Failed to form a URI Object from input");
+      throw e;
+    } catch (MalformedURLException e) {
+      System.out.println("[EXCEPTION] Failed to form a URL Object from input");
+      throw e;
+    }
+  }
+
+  public FacebookResposne getResponse() throws URISyntaxException, IOException {
+
+    Gson gson = new Gson();
+    FacebookResposne facebookResposne = null;
+    String output = null;
+    try {
+
+      URL url = createURL();
+      con = (HttpURLConnection) url.openConnection();
+      con.setRequestMethod("GET");
+
+      responseCode = con.getResponseCode();
+      InputStream inputStream = null;
+      inputStream =
+          (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) ? (con.getInputStream()) : (con.getErrorStream());
+
+      output = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
+      facebookResposne = gson.fromJson(output, FacebookResposne.class);
+
+      System.out.println("[INFO] ResponseCode: " + responseCode);
+
+      con.disconnect();
+    } catch (IOException e) {
+      System.out.println("[EXCEPTION]: Failed to create a URL object or failed to get get output from facebook.");
+      System.out.println("\t\t Check to make sure the auth token is correct.");
+      System.out.println("\t\t Response Code: " + responseCode);
+      throw e;
+    }
+
+    return facebookResposne;
+  }
+}
