@@ -19,8 +19,22 @@ public class CalendarEvent {
   public String googleEventUrl;
 
   public String toString() {
-    return "{\nfbeid: " + facebookEventId + "\ngeid: " + googleEventId + "\ngoogleetag: " + googleEventEtag
-        + "\nstart_t: " + startTime.toString() + "\nend_t: " + endTime.toString() + "\ndescription: " + description
-        + "\ntitle: " + title + "\nURL: " + googleEventUrl + "\n";
+    return "{\nfbeid: "
+        + facebookEventId
+        + "\ngeid: "
+        + googleEventId
+        + "\ngoogleetag: "
+        + googleEventEtag
+        + "\nstart_t: "
+        + startTime.toString()
+        + "\nend_t: "
+        + endTime.toString()
+        + "\ndescription: "
+        + description
+        + "\ntitle: "
+        + title
+        + "\nURL: "
+        + googleEventUrl
+        + "\n";
   }
 }

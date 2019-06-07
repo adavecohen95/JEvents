@@ -47,9 +47,8 @@ public class FacebookEventServiceFactory {
   }
 
   /**
-   * Creates an instance of FacebookEventService. Using the factory method and dependency injection
-   *
-   * @return An instance of FacebookEventService with the configurations to make FacebookEvent Batch calls.
+   * Creates an instance of FacebookEventService. Uses the factory method and dependency injection.
+   * @return An instance of FacebookEventService with the configurations to make FacebookEvent batch calls.
    */
   public static FacebookEventService createInstance() {
     ApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:" + configFile);

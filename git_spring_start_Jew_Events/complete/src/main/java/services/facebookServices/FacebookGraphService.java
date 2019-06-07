@@ -93,7 +93,7 @@ public class FacebookGraphService {
 
       con.disconnect();
     } catch (IOException e) {
-      System.out.println("[EXCEPTION]: Failed to create a URL object or failed to get get output from facebook.");
+      System.out.println("[EXCEPTION] Failed to create a URL object or failed to get get output from facebook.");
       System.out.println("\t\t Check to make sure the auth token is correct.");
       System.out.println("\t\t Response Code: " + responseCode);
       throw e;

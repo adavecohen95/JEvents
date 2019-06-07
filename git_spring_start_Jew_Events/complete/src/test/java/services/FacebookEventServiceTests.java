@@ -1,12 +1,7 @@
 package services;
 
 import factories.FacebookEventServiceFactory;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import models.FacebookResposne;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 import services.facebookServices.FacebookEventService;
 
 

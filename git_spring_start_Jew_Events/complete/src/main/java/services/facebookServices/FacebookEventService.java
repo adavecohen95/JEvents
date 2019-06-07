@@ -17,7 +17,7 @@ public class FacebookEventService {
   }
 
   /**
-   * Using the facebook graph api service we can make calls to get facebook events of the user.
+   * Using the facebook graph api service, we can make calls to get facebook events of the user.
    * @return Returns the response from making a call to get Batch API Events.
    * @throws IOException
    * @throws URISyntaxException
