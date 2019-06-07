@@ -1,8 +1,8 @@
-package services;
+package calendar.services;
 
-import factories.FacebookEventServiceFactory;
+import calendar.factories.FacebookEventServiceFactory;
 import org.junit.Before;
-import services.facebookServices.FacebookEventService;
+import calendar.services.facebookServices.FacebookEventService;
 
 
 public class FacebookEventServiceTests {

@@ -11,7 +11,7 @@
   </util:map>
 
   <!--These are the properties that are necessary to make a graph api call for facebook's batch events -->
-  <bean id="ConfigClass" class="factories.FacebookEventServiceFactory$ConfigClass">
+  <bean id="ConfigClass" class="calendar.factories.FacebookEventServiceFactory$ConfigClass">
     <property name="authToken"    value="PLACEHOLDER"/>
     <property name="graphUrl"     value="https://graph.facebook.com/v3.3/%s/events"/>
     <property name="userId"       value="101374641131971"/>

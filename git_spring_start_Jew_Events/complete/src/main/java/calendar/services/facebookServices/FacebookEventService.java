@@ -1,8 +1,8 @@
-package services.facebookServices;
+package calendar.services.facebookServices;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import models.FacebookResposne;
+import calendar.models.FacebookResposne;
 
 
 /**

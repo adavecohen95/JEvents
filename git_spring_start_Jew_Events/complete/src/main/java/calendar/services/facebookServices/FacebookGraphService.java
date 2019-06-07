@@ -1,4 +1,4 @@
-package services.facebookServices;
+package calendar.services.facebookServices;
 
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import models.FacebookResposne;
+import calendar.models.FacebookResposne;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.utils.URIBuilder;
 

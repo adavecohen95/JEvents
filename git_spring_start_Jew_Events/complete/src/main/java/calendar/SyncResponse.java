@@ -2,7 +2,7 @@ package calendar;
 
 import java.util.ArrayList;
 import java.util.List;
-import models.CalendarEvent;
+import calendar.models.CalendarEvent;
 
 
 public class SyncResponse {

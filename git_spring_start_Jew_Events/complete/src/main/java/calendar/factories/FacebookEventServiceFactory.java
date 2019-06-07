@@ -1,11 +1,11 @@
-package factories;
+package calendar.factories;
 
 import java.util.Map;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import services.facebookServices.FacebookEventService;
-import services.facebookServices.FacebookGraphService;
+import calendar.services.facebookServices.FacebookEventService;
+import calendar.services.facebookServices.FacebookGraphService;
 
 
 /**

@@ -1,4 +1,4 @@
-package models.facebookEvents;
+package calendar.models.facebookEvents;
 
 public class FacebookPlace {
 

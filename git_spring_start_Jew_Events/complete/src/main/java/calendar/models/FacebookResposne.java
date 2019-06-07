@@ -1,9 +1,9 @@
-package models;
+package calendar.models;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.util.List;
-import models.facebookEvents.FacebookEvent;
+import calendar.models.facebookEvents.FacebookEvent;
 
 
 public class FacebookResposne {

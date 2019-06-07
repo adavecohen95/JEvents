@@ -1,4 +1,4 @@
-package models;
+package calendar.models;
 
 import com.google.api.client.util.DateTime;
 
