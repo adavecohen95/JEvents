@@ -18,6 +18,9 @@ public class FacebookEventServiceFactory {
 
   private static final String configFile = "config/FacebookConfig.xml";
 
+  /**
+   * This class is the configuration class that is configured from the config files.
+   */
   @Configuration
   static class ConfigClass {
 
@@ -43,6 +46,11 @@ public class FacebookEventServiceFactory {
     }
   }
 
+  /**
+   * Creates an instance of FacebookEventService. Using the factory method and dependency injection
+   *
+   * @return An instance of FacebookEventService with the configurations to make FacebookEvent Batch calls.
+   */
   public static FacebookEventService createInstance() {
     ApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:" + configFile);
     ConfigClass configClass = applicationContext.getBean("ConfigClass", FacebookEventServiceFactory.ConfigClass.class);

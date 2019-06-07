@@ -3,14 +3,14 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-  <!-- These are the Parameters that will be present in the GET request to facebook's graph API-->
+  <!-- These are the parameters that will be present in the GET request to facebook's graph API-->
   <util:map id="utilmap"    map-class="java.util.HashMap">
     <entry key="pretty"     value="1"/>
     <entry key="limit"      value="200"/>
     <entry key="type"       value="not_replied"/>
   </util:map>
 
-  <!--These are the properties that are necessary to make a graph api call for Batch Events -->
+  <!--These are the properties that are necessary to make a graph api call for facebook's batch events -->
   <bean id="ConfigClass" class="factories.FacebookEventServiceFactory$ConfigClass">
     <property name="authToken"    value="PLACEHOLDER"/>
     <property name="graphUrl"     value="https://graph.facebook.com/v3.3/%s/events"/>

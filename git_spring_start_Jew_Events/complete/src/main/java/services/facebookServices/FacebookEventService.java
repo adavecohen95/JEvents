@@ -5,6 +5,9 @@ import java.net.URISyntaxException;
 import models.FacebookResposne;
 
 
+/**
+ *  This class gets all of the facebook events that we get from our user.
+ */
 public class FacebookEventService {
 
   private FacebookGraphService _facebookGraphService;
@@ -13,6 +16,12 @@ public class FacebookEventService {
     this._facebookGraphService = facebookGraphService;
   }
 
+  /**
+   * Using the facebook graph api service we can make calls to get facebook events of the user.
+   * @return Returns the response from making a call to get Batch API Events.
+   * @throws IOException
+   * @throws URISyntaxException
+   */
   public FacebookResposne getEvents() throws IOException, URISyntaxException {
     return _facebookGraphService.getResponse();
   }

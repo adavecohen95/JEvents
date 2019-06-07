@@ -15,8 +15,14 @@ import org.apache.http.client.utils.URIBuilder;
 
 //All print statements will be converted to log statements
 
+/**
+ * This class is meant to be an all purpose service class for Facebook Graph Api calls.
+ */
 public class FacebookGraphService {
 
+  /*
+    The following variables all serve the purpose of configuring the service towards the user's specific graph api request
+   */
   private URIBuilder fbURI;
   private HttpURLConnection con;
   private int responseCode;
@@ -24,7 +30,6 @@ public class FacebookGraphService {
   private String _authToken;
   private String _graphUrl;
   private Map<String, String> _parameters;
-  private int _goodResponse;
 
   public FacebookGraphService(String authToken, String graphUrl, String userId, Map<String, String> parameters) {
     this._authToken = authToken;
@@ -32,6 +37,13 @@ public class FacebookGraphService {
     this._parameters = parameters;
   }
 
+  /**
+   * Creates the URL object from the configurations given in the constructor.
+   * @return The URL object that the service will connect to in order to send the request.
+   * Includes the parameters being set in the GET request.
+   * @throws URISyntaxException
+   * @throws MalformedURLException
+   */
   private URL createURL() throws URISyntaxException, MalformedURLException {
 
     try {
@@ -52,6 +64,12 @@ public class FacebookGraphService {
     }
   }
 
+  /**
+   * Makes calls to facebook under the configurations set in the constructor and returns the response.
+   * @return  The Object form of the the JSON response from facebook. Including the errors or data that is received.
+   * @throws URISyntaxException
+   * @throws IOException
+   */
   public FacebookResposne getResponse() throws URISyntaxException, IOException {
 
     Gson gson = new Gson();
