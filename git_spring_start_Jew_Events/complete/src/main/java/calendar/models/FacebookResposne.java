@@ -3,13 +3,12 @@ package calendar.models;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.util.List;
-import calendar.models.facebookEvents.FacebookEvent;
 
 
 public class FacebookResposne {
 
   public Error error;
-  public List<FacebookEvent> data;
+  public List<CalendarEvent> data;
 
   public class Error {
     String message;

@@ -4,7 +4,6 @@ import calendar.models.facebookEvents.FacebookPlace;
 import com.google.api.client.util.DateTime;
 import com.google.gson.Gson;
 
-
 public class CalendarEvent {
 
   /* facebook event fields that are imported from facebook rest response */
@@ -16,7 +15,6 @@ public class CalendarEvent {
   public long id;
   public String rsvp_status;
   /* End facebook event fields */
-
 
   /* Obsolete fields */
   public String facebookEventId;
