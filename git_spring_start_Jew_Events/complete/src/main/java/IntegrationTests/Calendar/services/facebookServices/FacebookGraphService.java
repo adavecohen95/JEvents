@@ -1,4 +1,4 @@
-package calendar.services.facebookServices;
+package IntegrationTests.Calendar.services.facebookServices;
 
 import com.google.gson.Gson;
 import java.io.IOException;

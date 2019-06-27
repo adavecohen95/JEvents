@@ -9,7 +9,7 @@ import calendar.models.CalendarEvent;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import calendar.services.GoogleCalendarService;
+import IntegrationTests.Calendar.services.GoogleCalendarService;
 
 
 @RestController

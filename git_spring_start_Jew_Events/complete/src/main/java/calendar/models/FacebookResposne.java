@@ -1,5 +1,6 @@
 package calendar.models;
 
+import calendar.models.facebookEvents.FacebookErrorResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.util.List;
@@ -7,15 +8,8 @@ import java.util.List;
 
 public class FacebookResposne {
 
-  public Error error;
+  public FacebookErrorResponse error;
   public List<CalendarEvent> data;
-
-  public class Error {
-    String message;
-    String type;
-    int code;
-    String fbtrace_id;
-  }
 
   @Override
   public String toString() {
