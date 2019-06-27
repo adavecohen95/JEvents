@@ -1,4 +1,4 @@
-package calendar.services;
+package IntegrationTests.Calendar.services;
 
 import calendar.models.CalendarEvent;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import org.springframework.core.io.ClassPathResource;
-
 
 class GoogleCalendarSync {
   public GoogleCalendarSync(Calendar cal, String calendarId) {

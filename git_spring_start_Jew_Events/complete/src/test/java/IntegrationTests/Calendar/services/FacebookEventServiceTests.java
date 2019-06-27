@@ -1,13 +1,8 @@
-package calendar.services;
+package IntegrationTests.Calendar.services;
 
 import calendar.factories.FacebookEventServiceFactory;
-import calendar.models.FacebookResposne;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import org.junit.Assert;
 import org.junit.Before;
-import calendar.services.facebookServices.FacebookEventService;
-import org.junit.Test;
+import IntegrationTests.Calendar.services.facebookServices.FacebookEventService;
 
 
 public class FacebookEventServiceTests {
