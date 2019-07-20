@@ -2,7 +2,7 @@ package IntegrationTests.Calendar.services;
 
 import calendar.factories.FacebookEventServiceFactory;
 import org.junit.Before;
-import IntegrationTests.Calendar.services.facebookServices.FacebookEventService;
+import calendar.services.facebookServices.FacebookEventService;
 
 
 public class FacebookEventServiceTests {

@@ -1,4 +1,4 @@
-package IntegrationTests.Calendar.services.facebookServices;
+package calendar.services.facebookServices;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -25,4 +25,5 @@ public class FacebookEventService {
   public FacebookResposne getEvents() throws IOException, URISyntaxException {
     return _facebookGraphService.getResponse();
   }
+
 }

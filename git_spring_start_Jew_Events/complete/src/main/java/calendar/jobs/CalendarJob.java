@@ -1,11 +1,16 @@
-package UnitTests.Calendar.jobs;
+package calendar.jobs;
 
 import calendar.models.FacebookResposne;
 import calendar.models.facebookEvents.FacebookErrorResponse;
-import IntegrationTests.Calendar.services.GoogleCalendarService;
-import IntegrationTests.Calendar.services.facebookServices.FacebookEventService;
+import calendar.scheduler.CalendarScheduler;
+import calendar.services.GoogleCalendarService;
+import calendar.services.facebookServices.FacebookEventService;
 import calendar.util.AbstractAction;
 import calendar.util.FacebookErrors;
+import calendar.util.ResonseActions.SuccessfulResponseAction;
+import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class CalendarJob {
@@ -14,15 +19,19 @@ public class CalendarJob {
   private FacebookEventService _facebookEventService;
   private GoogleCalendarService _googleCalendarService;
   private FacebookErrors _facebookErrors;
+  private AbstractAction _okayResponse;
+
+  private static final Logger log = LoggerFactory.getLogger(CalendarJob.class);
 
   public CalendarJob(FacebookEventService facebookEventService, GoogleCalendarService googleCalendarService,
-      FacebookErrors facebookErrors) {
+    FacebookErrors facebookErrors, AbstractAction okayResponse) {
     _facebookEventService = facebookEventService;
     _googleCalendarService = googleCalendarService;
     _facebookErrors = facebookErrors;
+    _okayResponse = okayResponse;
   }
 
-  public boolean startJob() {
+  public boolean runJob() {
 
    try {
      FacebookResposne facebookResposne = _facebookEventService.getEvents();
@@ -31,11 +40,15 @@ public class CalendarJob {
      if(facebookErrorResponse != null) {
        int errorCode = FacebookErrors.boundResponseCode(facebookErrorResponse.code);
        AbstractAction errorAction = _facebookErrors.getAction(errorCode);
-       return errorAction.action(facebookErrorResponse);
+       log.info("Job Failed");
+       return errorAction.action(facebookResposne);
      }
-     else {
-       _googleCalendarService.AddEventsFromFacebook(facebookResposne.data);
-     }
+
+
+     log.info("Successfully Ran Job");
+     _okayResponse.action(facebookResposne);
+     _googleCalendarService.AddEventsFromFacebook(facebookResposne.data);
+
    } catch(Exception e) {
      return false;
    }

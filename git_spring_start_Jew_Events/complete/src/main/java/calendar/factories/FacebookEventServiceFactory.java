@@ -4,8 +4,8 @@ import java.util.Map;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import IntegrationTests.Calendar.services.facebookServices.FacebookEventService;
-import IntegrationTests.Calendar.services.facebookServices.FacebookGraphService;
+import calendar.services.facebookServices.FacebookEventService;
+import calendar.services.facebookServices.FacebookGraphService;
 
 
 /**

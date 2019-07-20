@@ -1,9 +1,10 @@
 package calendar.factories;
 
-import UnitTests.Calendar.jobs.CalendarJob;
-import IntegrationTests.Calendar.services.GoogleCalendarService;
-import IntegrationTests.Calendar.services.facebookServices.FacebookEventService;
+import calendar.jobs.CalendarJob;
+import calendar.services.GoogleCalendarService;
+import calendar.services.facebookServices.FacebookEventService;
 import calendar.util.FacebookErrors;
+import calendar.util.ResonseActions.SuccessfulResponseAction;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -24,7 +25,13 @@ public class CalendarJobFactory extends AbstractFactory{
 
     @Bean
     CalendarJob calendarJob() throws GeneralSecurityException, IOException {
-      return new CalendarJob(facebookEventService(),googleCalendarService(),facebookErrors());
+      return new CalendarJob(facebookEventService(),googleCalendarService(),facebookErrors(),
+          successfulResponseAction());
+    }
+
+    @Bean
+    SuccessfulResponseAction successfulResponseAction() {
+      return new SuccessfulResponseAction();
     }
 
     FacebookEventService facebookEventService() {
@@ -32,7 +39,8 @@ public class CalendarJobFactory extends AbstractFactory{
     }
 
     GoogleCalendarService googleCalendarService() throws GeneralSecurityException, IOException {
-      return new GoogleCalendarService();
+      //return new GoogleCalendarService();
+      return null;
     }
 
     FacebookErrors facebookErrors() {

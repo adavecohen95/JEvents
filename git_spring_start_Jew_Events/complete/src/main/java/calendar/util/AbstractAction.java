@@ -1,18 +1,31 @@
 package calendar.util;
 
 import calendar.models.general.Response;
+import calendar.scheduler.CalendarScheduler;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public abstract class AbstractAction {
 
-  public long miliSecondsInDay = 0x5265C00L;
-  public long miliSecondsIn6Hours = 0x36EE80L;
+  public static final int MINS_IN_DAY = 1440;
+  public static final int MINS_IN_SIX_HOURS = 350;
+  public static final int STANDARD_UPDATE_TIME = 20;
 
-  protected long increasedUpdateTime = 0L;
-  protected boolean failProcess = false;
+  protected static int increasedUpdateTime = 0;  /* In hours */
+  protected static boolean failProcess = false;
 
-  public long getIncreasedUpdateTime() {
+  protected static final Logger log = LoggerFactory.getLogger(AbstractAction.class);
+  protected static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
+  public static int getIncreasedUpdateTime() {
+    log.debug("Update speed is now %s", dateFormat.format(new Date()));
     return increasedUpdateTime;
+  }
+  public static boolean getFailProcess() {
+    return failProcess;
   }
 
   public abstract boolean action(Response response);

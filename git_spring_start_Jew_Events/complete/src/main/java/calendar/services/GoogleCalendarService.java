@@ -1,7 +1,6 @@
-package IntegrationTests.Calendar.services;
+package calendar.services;
 
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+import calendar.models.CalendarEvent;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -24,14 +23,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import calendar.models.CalendarEvent;
 import org.springframework.core.io.ClassPathResource;
-
 
 class GoogleCalendarSync {
   public GoogleCalendarSync(Calendar cal, String calendarId) {
     _calendar = cal;
     _calendarId = calendarId;
+    _facebookIdMap = new HashMap<String, CalendarEvent>();
   }
 
   public List<CalendarEvent> ListEvents() {
@@ -61,13 +59,15 @@ class GoogleCalendarSync {
     // Find the google event corresponding to this event and replace it with the
     // new event details.
     DateTime now = new DateTime(System.currentTimeMillis());
-    Events events = _calendar.events()
-        .list(_calendarId)
-        .setMaxResults(10000)
-        .setTimeMin(now)
-        .setOrderBy("startTime")
-        .setSingleEvents(true)
-        .execute();
+    Events events =
+        _calendar
+            .events()
+            .list(_calendarId)
+            .setMaxResults(10000)
+            .setTimeMin(now)
+            .setOrderBy("startTime")
+            .setSingleEvents(true)
+            .execute();
     List<Event> items = events.getItems();
     if (items.isEmpty()) {
       System.out.println("No upcoming events found. Didn't update anything");
@@ -112,8 +112,10 @@ class GoogleCalendarSync {
   // Compares whether two elements have the same (startTime, endTime,
   // description, title).
   private Boolean CompareEventDetails(CalendarEvent e1, CalendarEvent e2) {
-    return (e1.startTime.hashCode() == e2.startTime.hashCode()) && (e1.endTime.hashCode() == e2.endTime.hashCode())
-        && e1.description.compareTo(e2.description) == 0 && e1.title.compareTo(e2.title) == 0;
+    return (e1.startTime.hashCode() == e2.startTime.hashCode())
+        && (e1.endTime.hashCode() == e2.endTime.hashCode())
+        && e1.description.compareTo(e2.description) == 0
+        && e1.title.compareTo(e2.title) == 0;
   }
 
   // facebook id -> event.
@@ -127,27 +129,30 @@ public class GoogleCalendarService {
   private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
   private static final String TOKENS_DIRECTORY_PATH = "tokens";
 
-  private GoogleCalendarSync _calendarSynchronizer;
-  private AuthorizationCodeInstalledApp _authorization;
+  private GoogleCalendarSync calendarSynchronizer_;
+  private GoogleAuthorizationCodeFlow flow_;
 
   public GoogleCalendarService() throws GeneralSecurityException, IOException {
     final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-    _authorization = getAuthorization(HTTP_TRANSPORT);
-    _calendarSynchronizer = null;
+    flow_ = getFlow(HTTP_TRANSPORT);
+    calendarSynchronizer_ = null;
   }
 
-  public void AddEventsFromFacebook(List<CalendarEvent> events) throws IOException, GeneralSecurityException {
-    if (_calendarSynchronizer == null) {
-      throw new GeneralSecurityException("Need to authorize w/ user first before running AddEventsFromFacebook()!");
+  public void AddEventsFromFacebook(List<CalendarEvent> events)
+      throws IOException, GeneralSecurityException {
+    if (!isSetup()) {
+      throw new GeneralSecurityException(
+          "Need to authorize w/ user first before running AddEventsFromFacebook()!");
     }
-    _calendarSynchronizer.AddEventsFromFacebook(events);
+    calendarSynchronizer_.AddEventsFromFacebook(events);
   }
 
   public List<CalendarEvent> ListEvents() throws GeneralSecurityException, IOException {
-    if (_calendarSynchronizer == null) {
-      throw new GeneralSecurityException("Need to authorize w/ user first before running AddEventsFromFacebook()!");
+    if (!isSetup()) {
+      throw new GeneralSecurityException(
+          "Need to authorize w/ user first before running AddEventsFromFacebook()!");
     }
-    return _calendarSynchronizer.ListEvents();
+    return calendarSynchronizer_.ListEvents();
   }
 
   /**
@@ -165,7 +170,7 @@ public class GoogleCalendarService {
    * @return An authorized Credential object.
    * @throws IOException If the credentials.json file cannot be found.
    */
-  private static AuthorizationCodeInstalledApp getAuthorization(final NetHttpTransport HTTP_TRANSPORT)
+  private static GoogleAuthorizationCodeFlow getFlow(final NetHttpTransport HTTP_TRANSPORT)
       throws IOException {
     // Load client secrets.
     // InputStream in = GoogleCalendarService.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
@@ -173,32 +178,40 @@ public class GoogleCalendarService {
     if (in == null) {
       throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
     }
-    GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+    GoogleClientSecrets clientSecrets =
+        GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
     // Build flow and trigger user authorization request.
-    GoogleAuthorizationCodeFlow flow =
-        new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets,
-            SCOPES).setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
-            .setAccessType("offline")
-            .build();
-    LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-    return new AuthorizationCodeInstalledApp(flow, receiver);
+    return new GoogleAuthorizationCodeFlow.Builder(
+            HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
+        .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
+        .setAccessType("offline")
+        .build();
   }
 
   public Boolean isAuthorized() throws IOException {
-    return _authorization.getFlow().loadCredential("user") != null;
+    return flow_.loadCredential("user") != null;
   }
 
   public String getAuthorizationUrl() {
-    return _authorization.getFlow()
+    return flow_
         .newAuthorizationUrl()
         .setScopes(SCOPES)
-        .setRedirectUri("http://127.0.0.1:8888")
+        .setRedirectUri("http://localhost:8080/sync")
         .build();
   }
 
   public Boolean isSetup() {
-    return _calendarSynchronizer == null;
+    return calendarSynchronizer_ != null;
+  }
+
+  public void handleAuthCode(String code) {
+    try {
+      flow_.createAndStoreCredential(flow_.newTokenRequest(code).setRedirectUri("http://localhost:8080/sync").execute(), "user");
+    } catch (IOException e) {
+      System.out.println("Unable to create credential from received authorization code: " + e);
+      return;
+    }
   }
 
   public void PostAuthorizationSetup() throws IOException, GeneralSecurityException {
@@ -208,8 +221,10 @@ public class GoogleCalendarService {
     // Build a new authorized API client service.
     final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
     Calendar service =
-        new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, _authorization.authorize("user")).setApplicationName(
-            APPLICATION_NAME).build();
-    _calendarSynchronizer = new GoogleCalendarSync(service, "bsp4pl7nrmbt1merbkuehqluj4@group.calendar.google.com");
+        new Calendar.Builder(HTTP_TRANSPORT, JSON_FACTORY, flow_.loadCredential("user"))
+            .setApplicationName(APPLICATION_NAME)
+            .build();
+    calendarSynchronizer_ =
+        new GoogleCalendarSync(service, "6rmr17ucm6jeo35in8k90n5kj8@group.calendar.google.com");
   }
 }
