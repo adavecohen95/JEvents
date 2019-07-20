@@ -39,8 +39,7 @@ public class CalendarJobFactory extends AbstractFactory{
     }
 
     GoogleCalendarService googleCalendarService() throws GeneralSecurityException, IOException {
-      //return new GoogleCalendarService();
-      return null;
+      return new GoogleCalendarService();
     }
 
     FacebookErrors facebookErrors() {

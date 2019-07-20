@@ -21,8 +21,8 @@ import org.mockito.MockitoAnnotations;
 import static org.mockito.Mockito.*;
 
 
-//public class CalendarJobTests {
-//
+public class CalendarJobTests {
+
 //@Mock private FacebookEventService _facebookEventServiceData;
 //@Mock private FacebookEventService _facebookEventServiceError;
 //@Mock private GoogleCalendarService _googleCalendarService;
@@ -65,4 +65,4 @@ import static org.mockito.Mockito.*;
 //
 
 
-//}
+}
