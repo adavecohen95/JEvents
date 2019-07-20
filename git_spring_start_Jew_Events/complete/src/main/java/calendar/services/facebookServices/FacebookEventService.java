@@ -1,4 +1,4 @@
-package IntegrationTests.Calendar.services.facebookServices;
+package calendar.services.facebookServices;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

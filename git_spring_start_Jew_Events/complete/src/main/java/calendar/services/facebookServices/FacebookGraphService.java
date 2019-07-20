@@ -1,6 +1,5 @@
-package IntegrationTests.Calendar.services.facebookServices;
+package calendar.services.facebookServices;
 
-import calendar.factories.FacebookErrorsFactory;
 import calendar.factories.FacebookEventServiceFactory;
 import com.google.gson.Gson;
 import java.io.IOException;

@@ -3,7 +3,7 @@ package UnitTests.Calendar.jobs;
 import calendar.models.FacebookResposne;
 import calendar.models.facebookEvents.FacebookErrorResponse;
 import IntegrationTests.Calendar.services.GoogleCalendarService;
-import IntegrationTests.Calendar.services.facebookServices.FacebookEventService;
+import calendar.services.facebookServices.FacebookEventService;
 import calendar.util.AbstractAction;
 import calendar.util.FacebookErrors;
 

@@ -4,7 +4,7 @@ import calendar.models.general.Response;
 import com.google.gson.Gson;
 
 
-public class FacebookErrorResponse {
+public class FacebookErrorResponse extends Response{
   public String message;
   public String type;
   public int code;
