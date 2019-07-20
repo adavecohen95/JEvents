@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
 import org.springframework.core.io.ClassPathResource;
 
 
@@ -40,7 +41,9 @@ class GoogleCalendarSync {
   // Events with facebook information get added to the GoogleCalendarSync, which
   public void AddEventsFromFacebook(List<CalendarEvent> events) throws IOException {
     for (CalendarEvent e : events) {
+      System.out.println(e);
       if (_facebookIdMap.containsKey(e.facebookEventId)) {
+        System.out.println("Found event " + e + " in facebookIdMap");
         // If the event already exists, update details and then continue.
         CalendarEvent existingEvent = _facebookIdMap.get(e.facebookEventId);
         if (!CompareEventDetails(existingEvent, e)) {
@@ -98,6 +101,7 @@ class GoogleCalendarSync {
   }
 
   private void CreateGoogleEvent(CalendarEvent event) throws IOException {
+    System.out.println("Creating new event: " + event + ", title: " + event.title);
     Event e = new Event();
     e.setSummary(event.title);
     e.setDescription(event.description);
