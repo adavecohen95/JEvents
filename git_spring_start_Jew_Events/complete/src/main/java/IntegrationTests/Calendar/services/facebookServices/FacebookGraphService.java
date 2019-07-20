@@ -1,5 +1,7 @@
 package IntegrationTests.Calendar.services.facebookServices;
 
+import calendar.factories.FacebookErrorsFactory;
+import calendar.factories.FacebookEventServiceFactory;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.InputStream;
@@ -100,5 +102,10 @@ public class FacebookGraphService {
     }
 
     return facebookResposne;
+  }
+  public static void main(String args[]) throws IOException, URISyntaxException {
+    FacebookEventService facebookEventService = FacebookEventServiceFactory.createInstance();
+    System.out.println(new Gson().toJson(facebookEventService.getEvents()));
+
   }
 }

@@ -25,4 +25,5 @@ public class FacebookEventService {
   public FacebookResposne getEvents() throws IOException, URISyntaxException {
     return _facebookGraphService.getResponse();
   }
+
 }

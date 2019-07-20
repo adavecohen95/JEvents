@@ -28,10 +28,5 @@ public class FactoriesTest {
     Assert.assertNotNull(FacebookEventServiceFactory.createInstance());
   }
 
-  @Test
-  public void testTest() throws GeneralSecurityException, IOException {
-    Assert.assertNotNull(GoogleNetHttpTransport.newTrustedTransport());
-  }
-
 
 }

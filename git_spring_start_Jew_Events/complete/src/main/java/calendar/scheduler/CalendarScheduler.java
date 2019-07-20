@@ -1,22 +1,24 @@
 package calendar.scheduler;
 
-import calendar.factories.CalendarJobFactory;
-import UnitTests.Calendar.jobs.CalendarJob;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.TriggerContext;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.SchedulingConfigurer;
-import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+    import calendar.factories.CalendarJobFactory;
+    import calendar.jobs.CalendarJob;
+    import calendar.util.AbstractAction;
+    import java.text.SimpleDateFormat;
+    import java.util.Calendar;
+    import java.util.Date;
+    import java.util.GregorianCalendar;
+    import java.util.concurrent.Executor;
+    import java.util.concurrent.Executors;
+    import java.util.concurrent.ScheduledExecutorService;
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
+    import org.springframework.context.annotation.Bean;
+    import org.springframework.context.annotation.Configuration;
+    import org.springframework.scheduling.Trigger;
+    import org.springframework.scheduling.TriggerContext;
+    import org.springframework.scheduling.annotation.EnableScheduling;
+    import org.springframework.scheduling.annotation.SchedulingConfigurer;
+    import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 
 @Configuration
@@ -32,23 +34,32 @@ public class CalendarScheduler extends AbstractScheduler implements SchedulingCo
   @Bean
   public Executor taskExecutor() {
     return Executors.newScheduledThreadPool(100);
+
   }
-
-
-//  @Scheduled(fixedRate = nextIteration)
-//  public void job() {
-//    calendarJob.startJob();
-//
-//  }
 
   @Override
   public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-    taskRegistrar.setScheduler(taskExecutor());
+
+    Executor executor = taskExecutor();
+    taskRegistrar.setScheduler(executor);
     taskRegistrar.addTriggerTask(
         new Runnable() {
-          @Override public void run() {
-            log.info("Calendar has been updated at", dateFormat.format(new Date()));
-            calendarJob.startJob();
+          @Override
+          public void run() {
+//            log.info("Calendar Job has started at " + dateFormat.format(new Date()));
+
+//            if(false /*calendarJob.startJob()*/) {
+//              ((ScheduledExecutorService) executor).shutdown();
+//              taskRegistrar.destroy();
+//              log.info("Calendar Job has terminated at " + dateFormat.format(new Date()));
+//            }
+
+//            log.info("Calendar has been updated at " + dateFormat.format(new Date()));
+
+
+            calendarJob.runJob();
+            log.info("Ran Job" + dateFormat.format(new Date()));
+
           }
         },
         new Trigger() {
@@ -56,7 +67,8 @@ public class CalendarScheduler extends AbstractScheduler implements SchedulingCo
             Calendar nextExecutionTime =  new GregorianCalendar();
             Date lastActualExecutionTime = triggerContext.lastActualExecutionTime();
             nextExecutionTime.setTime(lastActualExecutionTime != null ? lastActualExecutionTime : new Date());
-            nextExecutionTime.add(Calendar.SECOND, 1); //you can get the value from wherever you want
+            //nextExecutionTime.add(Calendar.MINUTE, AbstractAction.getIncreasedUpdateTime()); //you can get the value from wherever you want
+            nextExecutionTime.add(Calendar.SECOND,10);
             return nextExecutionTime.getTime();
           }
         }

@@ -226,6 +226,6 @@ public class GoogleCalendarService {
             .setApplicationName(APPLICATION_NAME)
             .build();
     calendarSynchronizer_ =
-        new GoogleCalendarSync(service, "bsp4pl7nrmbt1merbkuehqluj4@group.calendar.google.com");
+        new GoogleCalendarSync(service, "6rmr17ucm6jeo35in8k90n5kj8@group.calendar.google.com");
   }
 }
