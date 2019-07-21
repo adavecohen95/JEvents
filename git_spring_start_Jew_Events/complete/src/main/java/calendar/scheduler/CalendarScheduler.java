@@ -27,7 +27,7 @@ public class CalendarScheduler extends AbstractScheduler implements SchedulingCo
 
   private static final Logger log = LoggerFactory.getLogger(CalendarScheduler.class);
 
-  private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+  private static final SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD-HH:mm:ss");
 
   private static CalendarJob calendarJob = CalendarJobFactory.createInstance();
 
@@ -46,20 +46,15 @@ public class CalendarScheduler extends AbstractScheduler implements SchedulingCo
         new Runnable() {
           @Override
           public void run() {
-//            log.info("Calendar Job has started at " + dateFormat.format(new Date()));
 
-//            if(false /*calendarJob.startJob()*/) {
-//              ((ScheduledExecutorService) executor).shutdown();
-//              taskRegistrar.destroy();
-//              log.info("Calendar Job has terminated at " + dateFormat.format(new Date()));
-//            }
-
-//            log.info("Calendar has been updated at " + dateFormat.format(new Date()));
-
-
-            calendarJob.runJob();
-            log.info("Ran Job" + dateFormat.format(new Date()));
-
+            if(calendarJob.runJob()) {
+              ((ScheduledExecutorService) executor).shutdown();
+              taskRegistrar.destroy();
+              log.info("Calendar Job has terminated at " + dateFormat.format(new Date()));
+            }
+            else {
+              log.info("Ran Job at " + dateFormat.format(new Date()));
+            }
           }
         },
         new Trigger() {
@@ -67,8 +62,7 @@ public class CalendarScheduler extends AbstractScheduler implements SchedulingCo
             Calendar nextExecutionTime =  new GregorianCalendar();
             Date lastActualExecutionTime = triggerContext.lastActualExecutionTime();
             nextExecutionTime.setTime(lastActualExecutionTime != null ? lastActualExecutionTime : new Date());
-            //nextExecutionTime.add(Calendar.MINUTE, AbstractAction.getIncreasedUpdateTime()); //you can get the value from wherever you want
-            nextExecutionTime.add(Calendar.SECOND,10);
+            nextExecutionTime.add(AbstractAction.getUpdateUnit(), AbstractAction.getIncreasedUpdateTime()); //you can get the value from wherever you want
             return nextExecutionTime.getTime();
           }
         }
