@@ -31,9 +31,11 @@ public class CalendarScheduler extends AbstractScheduler implements SchedulingCo
 
   private static CalendarJob calendarJob = CalendarJobFactory.createInstance();
 
+  private static final int NUM_THREADS = 10;
+
   @Bean
   public Executor taskExecutor() {
-    return Executors.newScheduledThreadPool(100);
+    return Executors.newScheduledThreadPool(NUM_THREADS);
 
   }
 
