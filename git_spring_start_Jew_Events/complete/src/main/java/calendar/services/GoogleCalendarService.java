@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
 
-
 class GoogleCalendarSync {
   public GoogleCalendarSync(Calendar cal, String calendarId) {
     _calendar = cal;
@@ -34,12 +33,37 @@ class GoogleCalendarSync {
     _facebookIdMap = new HashMap<String, CalendarEvent>();
   }
 
-  public List<CalendarEvent> ListEvents() {
-    return new ArrayList<CalendarEvent>(_facebookIdMap.values());
+  public List<CalendarEvent> ListEvents() throws IOException {
+    List<Event> events = LoadCalendarEvents();
+    ArrayList<CalendarEvent> calendarEvents = new ArrayList<CalendarEvent>();
+    for (Event e : events) {
+      CalendarEvent event = new CalendarEvent();
+      event.title = e.getSummary();
+      event.description = e.getDescription();
+      calendarEvents.add(event);
+    }
+    return calendarEvents;
   }
+
+  public List<Event> LoadCalendarEvents() throws IOException {
+    DateTime now = new DateTime(System.currentTimeMillis());
+    Events events =
+        _calendar
+            .events()
+            .list(_calendarId)
+            .setMaxResults(10000)
+            .setTimeMin(now)
+            .setOrderBy("startTime")
+            .setSingleEvents(true)
+            .execute();
+    return events.getItems();
+  }
+
+  private List<Event> eventCache_;
 
   // Events with facebook information get added to the GoogleCalendarSync, which
   public void AddEventsFromFacebook(List<CalendarEvent> events) throws IOException {
+    eventCache_  = LoadCalendarEvents();
     for (CalendarEvent e : events) {
       System.out.println(e);
       if (_facebookIdMap.containsKey(e.facebookEventId)) {
@@ -62,23 +86,17 @@ class GoogleCalendarSync {
   private void UpdateGoogleEvent(CalendarEvent event) throws IOException {
     // Find the google event corresponding to this event and replace it with the
     // new event details.
-    DateTime now = new DateTime(System.currentTimeMillis());
-    Events events =
-        _calendar
-            .events()
-            .list(_calendarId)
-            .setMaxResults(10000)
-            .setTimeMin(now)
-            .setOrderBy("startTime")
-            .setSingleEvents(true)
-            .execute();
-    List<Event> items = events.getItems();
-    if (items.isEmpty()) {
+    if ((eventCache_ == null) || eventCache_.isEmpty()) {
+      eventCache_ = LoadCalendarEvents();
+    }
+
+    if (eventCache_.isEmpty()) {
+
       System.out.println("No upcoming events found. Didn't update anything");
       return;
     }
     System.out.println("Upcoming events");
-    for (Event e : items) {
+    for (Event e : eventCache_) {
       if (e.getId().compareTo(event.googleEventId) == 0) {
         EventDateTime startTime = new EventDateTime();
         startTime.setDateTime(event.startTime);
@@ -100,7 +118,7 @@ class GoogleCalendarSync {
     }
   }
 
-  private void CreateGoogleEvent(CalendarEvent event) throws IOException {
+  public void CreateGoogleEvent(CalendarEvent event) throws IOException {
     System.out.println("Creating new event: " + event + ", title: " + event.title);
     Event e = new Event();
     e.setSummary(event.title);
@@ -217,6 +235,13 @@ public class GoogleCalendarService {
       System.out.println("Unable to create credential from received authorization code: " + e);
       return;
     }
+  }
+
+  public void CreateGoogleEvent(CalendarEvent event) throws IOException, GeneralSecurityException {
+    if (!isAuthorized()) {
+      throw new GeneralSecurityException("Need to authorize w/ user first before running add()");
+    }
+    calendarSynchronizer_.CreateGoogleEvent(event);
   }
 
   public void PostAuthorizationSetup() throws IOException, GeneralSecurityException {

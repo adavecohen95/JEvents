@@ -6,7 +6,7 @@ import com.google.gson.Gson;
 
 public class CalendarEvent {
 
-  /* facebook event fields that are imported from facebook rest response */
+  /* really obsolete fields */
   public String description;
   public String end_time;
   public String name;
@@ -16,7 +16,7 @@ public class CalendarEvent {
   public String rsvp_status;
   /* End facebook event fields */
 
-  /* Obsolete fields */
+  /* shiny new fields */
   public String facebookEventId;
   public DateTime startTime;
   public DateTime endTime;
