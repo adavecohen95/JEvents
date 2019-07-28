@@ -19,22 +19,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
+import org.mortbay.log.Log;
 import org.springframework.core.io.ClassPathResource;
 
 class GoogleCalendarSync {
   public GoogleCalendarSync(Calendar cal, String calendarId) {
     _calendar = cal;
     _calendarId = calendarId;
-    _facebookIdMap = new HashMap<String, CalendarEvent>();
+    _facebookIdMap = new HashMap<>();
   }
 
   public List<CalendarEvent> ListEvents() throws IOException {
     List<Event> events = LoadCalendarEvents();
+    System.out.println("Events fetched! Converting to CalendarEvent type...");
     ArrayList<CalendarEvent> calendarEvents = new ArrayList<CalendarEvent>();
     for (Event e : events) {
       CalendarEvent event = new CalendarEvent();
@@ -63,6 +62,7 @@ class GoogleCalendarSync {
 
   // Events with facebook information get added to the GoogleCalendarSync, which
   public void AddEventsFromFacebook(List<CalendarEvent> events) throws IOException {
+    Log.info("AddEventsFromFacebook(# events: " + events.size() + ")");
     eventCache_  = LoadCalendarEvents();
     for (CalendarEvent e : events) {
       System.out.println(e);
@@ -71,7 +71,10 @@ class GoogleCalendarSync {
         // If the event already exists, update details and then continue.
         CalendarEvent existingEvent = _facebookIdMap.get(e.facebookEventId);
         if (!CompareEventDetails(existingEvent, e)) {
-          _facebookIdMap.put(e.facebookEventId, e);
+          existingEvent.description = e.description;
+          existingEvent.title = e.title;
+          existingEvent.startTime = e.startTime;
+          existingEvent.endTime = e.endTime;
           UpdateGoogleEvent(existingEvent);
         }
         continue;
@@ -99,9 +102,9 @@ class GoogleCalendarSync {
     for (Event e : eventCache_) {
       if (e.getId().compareTo(event.googleEventId) == 0) {
         EventDateTime startTime = new EventDateTime();
-        startTime.setDateTime(event.startTime);
+        startTime.setDateTime(new DateTime(event.startTime));
         EventDateTime endTime = new EventDateTime();
-        endTime.setDateTime(event.endTime);
+        endTime.setDateTime(new DateTime(event.endTime));
         // Update event.
         e.setSummary(event.title);
         e.setDescription(event.description);
@@ -124,12 +127,15 @@ class GoogleCalendarSync {
     e.setSummary(event.title);
     e.setDescription(event.description);
     EventDateTime startTime = new EventDateTime();
-    startTime.setDateTime(event.startTime);
+    startTime.setDateTime(new DateTime(event.startTime));
     e.setStart(startTime);
     EventDateTime endTime = new EventDateTime();
-    endTime.setDateTime(event.endTime);
+    endTime.setDateTime(new DateTime(event.endTime));
     e.setEnd(endTime);
     _calendar.events().insert(_calendarId, e).execute();
+    event.googleEventId = e.getId();
+    event.googleEventEtag = e.getEtag();
+    event.googleEventUrl = e.getHtmlLink();
   }
 
   // Compares whether two elements have the same (startTime, endTime,
@@ -142,7 +148,7 @@ class GoogleCalendarSync {
   }
 
   // facebook id -> event.
-  private HashMap<String, CalendarEvent> _facebookIdMap;
+  private HashMap<Long, CalendarEvent> _facebookIdMap;
   private Calendar _calendar;
   private String _calendarId;
 }
@@ -164,8 +170,7 @@ public class GoogleCalendarService {
   public void AddEventsFromFacebook(List<CalendarEvent> events)
       throws IOException, GeneralSecurityException {
     if (!isSetup()) {
-      throw new GeneralSecurityException(
-          "Need to authorize w/ user first before running AddEventsFromFacebook()!");
+      PostAuthorizationSetup();
     }
     calendarSynchronizer_.AddEventsFromFacebook(events);
   }

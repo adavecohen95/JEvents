@@ -13,10 +13,10 @@ public abstract class AbstractAction {
 
   public static final int MINS_IN_DAY = 1440;
   public static final int MINS_IN_SIX_HOURS = 350;
-  public static final int STANDARD_UPDATE_TIME = 5;
+  public static final int STANDARD_UPDATE_TIME = 30;
 
   protected static int increasedUpdateTime = 0;
-  protected static final int updateUnit = Calendar.MINUTE;
+  protected static final int updateUnit = Calendar.SECOND;
   protected static boolean failProcess = false;
 
   protected static final Logger log = LoggerFactory.getLogger(AbstractAction.class);

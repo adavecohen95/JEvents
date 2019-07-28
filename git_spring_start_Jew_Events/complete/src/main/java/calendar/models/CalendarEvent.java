@@ -4,23 +4,15 @@ import calendar.models.facebookEvents.FacebookPlace;
 import com.google.api.client.util.DateTime;
 import com.google.gson.Gson;
 
+import java.util.Date;
+
 public class CalendarEvent {
 
-  /* really obsolete fields */
-  public String description;
-  public String end_time;
-  public String name;
-  public FacebookPlace place;
-  public String start_time;
-  public long id;
-  public String rsvp_status;
-  /* End facebook event fields */
-
   /* shiny new fields */
-  public String facebookEventId;
-  public DateTime startTime;
-  public DateTime endTime;
-  //public String description;
+  public Long facebookEventId;
+  public Date startTime;
+  public Date endTime;
+  public String description;
   public String title;
   /*End Obsolete fields */
 

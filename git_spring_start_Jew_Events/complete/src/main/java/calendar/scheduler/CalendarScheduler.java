@@ -49,7 +49,7 @@ public class CalendarScheduler extends AbstractScheduler implements SchedulingCo
           @Override
           public void run() {
 
-            if(calendarJob.runJob()) {
+            if(!calendarJob.runJob()) {
               ((ScheduledExecutorService) executor).shutdown();
               taskRegistrar.destroy();
               log.info("Calendar Job has terminated at " + dateFormat.format(new Date()));

@@ -2,6 +2,7 @@ package calendar.models;
 
 import calendar.models.facebookEvents.FacebookErrorResponse;
 import calendar.models.general.Response;
+import calendar.services.facebookServices.FacebookCalendarEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 public class FacebookResposne extends Response {
 
   public FacebookErrorResponse error;
-  public List<CalendarEvent> data;
+  public List<FacebookCalendarEvent> data;
 
   @Override
   public String toString() {

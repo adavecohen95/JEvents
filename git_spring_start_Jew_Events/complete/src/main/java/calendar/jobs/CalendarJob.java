@@ -1,5 +1,6 @@
 package calendar.jobs;
 
+import calendar.common.GeneralHelper;
 import calendar.models.FacebookResposne;
 import calendar.models.facebookEvents.FacebookErrorResponse;
 import calendar.scheduler.CalendarScheduler;
@@ -47,10 +48,15 @@ public class CalendarJob {
 
      log.info("Successfully Ran Job");
      _okayResponse.action(facebookResposne);
-     _googleCalendarService.AddEventsFromFacebook(facebookResposne.data);
+     log.info("Number of events pulled: " + facebookResposne.data.size());
+
+
+     _googleCalendarService.AddEventsFromFacebook(GeneralHelper.
+             convertToCalendarEvents(facebookResposne));
 
    } catch(Exception e) {
-     return false;
+     System.out.println("EXCEPTION CAUGHT HERE ");
+     e.printStackTrace();
    }
 
    return true;

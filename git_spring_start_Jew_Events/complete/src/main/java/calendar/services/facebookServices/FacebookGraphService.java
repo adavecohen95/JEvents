@@ -1,6 +1,7 @@
 package calendar.services.facebookServices;
 
 import calendar.factories.FacebookEventServiceFactory;
+import calendar.scheduler.CalendarScheduler;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +14,8 @@ import java.util.Map;
 import calendar.models.FacebookResposne;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.utils.URIBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //All print statements will be converted to log statements
 
@@ -27,6 +30,7 @@ public class FacebookGraphService {
   private URIBuilder fbURI;
   private HttpURLConnection con;
   private int responseCode;
+  private static final Logger log = LoggerFactory.getLogger(CalendarScheduler.class);
 
   private String _authToken;
   private String _graphUrl;
@@ -82,6 +86,8 @@ public class FacebookGraphService {
       con = (HttpURLConnection) url.openConnection();
       con.setRequestMethod("GET");
 
+      log.debug("GET URL " + url.getPath());
+
       responseCode = con.getResponseCode();
       InputStream inputStream = null;
       inputStream =
@@ -90,7 +96,8 @@ public class FacebookGraphService {
       output = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
       facebookResposne = gson.fromJson(output, FacebookResposne.class);
 
-      System.out.println("[INFO] ResponseCode: " + responseCode);
+
+    log.info("ResponseCode: " + responseCode);
 
       con.disconnect();
     } catch (IOException e) {

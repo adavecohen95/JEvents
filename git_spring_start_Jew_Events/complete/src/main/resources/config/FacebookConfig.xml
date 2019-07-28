@@ -7,7 +7,7 @@
   <util:map id="utilmap"    map-class="java.util.HashMap">
     <entry key="pretty"     value="1"/>
     <entry key="limit"      value="200"/>
-    <entry key="type"       value="not_replied"/>
+    <!--<entry key="type"       value="not_replied"/>-->
   </util:map>
 
   <!--These are the properties that are necessary to make a graph api call for facebook's batch events -->
