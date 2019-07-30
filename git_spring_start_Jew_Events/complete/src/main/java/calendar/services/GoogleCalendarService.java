@@ -110,6 +110,7 @@ class GoogleCalendarSync {
         e.setDescription(event.description);
         e.setStart(startTime);
         e.setEnd(endTime);
+        e.setLocation(event.location);
         System.out.println("Creating new event! Pre-creation ID: " + e.getId());
         _calendar.events().patch(_calendarId, event.googleEventId, e).execute();
         event.googleEventId = e.getId();
@@ -126,6 +127,7 @@ class GoogleCalendarSync {
     Event e = new Event();
     e.setSummary(event.title);
     e.setDescription(event.description);
+    e.setLocation(event.location);
     EventDateTime startTime = new EventDateTime();
     startTime.setDateTime(new DateTime(event.startTime));
     e.setStart(startTime);
@@ -144,7 +146,7 @@ class GoogleCalendarSync {
     return (e1.startTime.hashCode() == e2.startTime.hashCode())
         && (e1.endTime.hashCode() == e2.endTime.hashCode())
         && e1.description.compareTo(e2.description) == 0
-        && e1.title.compareTo(e2.title) == 0;
+        && e1.title.compareTo(e2.title) == 0 && e1.location.equals(e2.location);
   }
 
   // facebook id -> event.

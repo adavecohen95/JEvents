@@ -7,14 +7,12 @@ import com.google.gson.Gson;
 import java.util.Date;
 
 public class CalendarEvent {
-
-  /* shiny new fields */
   public Long facebookEventId;
   public Date startTime;
   public Date endTime;
   public String description;
   public String title;
-  /*End Obsolete fields */
+  public String location;
 
   public String googleEventId;
   // Use this to detect if the event has been modified. Same event ID but
