@@ -14,7 +14,7 @@ public class APIAuthFailureAction extends AbstractAction {
   @Override
   public boolean action(Response response) {
     log.debug("API Authentication failure occurred at: " + dateFormat.format(new Date()));
-    failProcess = true;
-    return failProcess;
+    continueProcess = false;
+    return continueProcess;
   }
 }

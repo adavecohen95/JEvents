@@ -45,18 +45,17 @@ public class CalendarJob {
        return errorAction.action(facebookResposne);
      }
 
-
      log.info("Successfully Ran Job");
      _okayResponse.action(facebookResposne);
      log.info("Number of events pulled: " + facebookResposne.data.size());
-
 
      _googleCalendarService.AddEventsFromFacebook(GeneralHelper.
              convertToCalendarEvents(facebookResposne));
 
    } catch(Exception e) {
-     System.out.println("EXCEPTION CAUGHT HERE ");
+     log.debug("Job caught an exception " + e.getMessage());
      e.printStackTrace();
+     return false;
    }
 
    return true;

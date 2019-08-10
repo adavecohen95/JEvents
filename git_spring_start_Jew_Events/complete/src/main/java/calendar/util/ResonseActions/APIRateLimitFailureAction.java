@@ -15,7 +15,7 @@ public class APIRateLimitFailureAction extends AbstractAction {
   public boolean action(Response response) {
     log.debug("API Rate Limit failure at: " + dateFormat.format(new Date()));
     increasedUpdateTime = MINS_IN_SIX_HOURS;
-    return failProcess;
+    return continueProcess;
   }
 
 }

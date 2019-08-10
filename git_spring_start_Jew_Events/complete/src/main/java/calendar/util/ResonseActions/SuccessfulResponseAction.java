@@ -14,8 +14,8 @@ public class SuccessfulResponseAction extends AbstractAction {
   @Override
   public boolean action(Response response) {
     log.info("Successful response from Facebook at: " + dateFormat.format(new Date()));
-    failProcess = false;
+    continueProcess = true;
     increasedUpdateTime = STANDARD_UPDATE_TIME;
-    return failProcess;
+    return continueProcess;
   }
 }

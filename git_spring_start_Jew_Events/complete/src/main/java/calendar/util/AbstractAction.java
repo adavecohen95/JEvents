@@ -17,7 +17,7 @@ public abstract class AbstractAction {
 
   protected static int increasedUpdateTime = 0;
   protected static final int updateUnit = Calendar.SECOND;
-  protected static boolean failProcess = false;
+  protected static boolean continueProcess = false;
 
   protected static final Logger log = LoggerFactory.getLogger(AbstractAction.class);
   protected static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -29,8 +29,8 @@ public abstract class AbstractAction {
   public static int getUpdateUnit() {
     return updateUnit;
   }
-  public static boolean getFailProcess() {
-    return failProcess;
+  public static boolean continueProcess() {
+    return continueProcess;
   }
 
   public abstract boolean action(Response response);

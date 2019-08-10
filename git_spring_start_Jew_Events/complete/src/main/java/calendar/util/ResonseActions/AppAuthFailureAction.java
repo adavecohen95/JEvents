@@ -14,7 +14,7 @@ public class AppAuthFailureAction extends AbstractAction {
   @Override
   public boolean action(Response response) {
     log.debug("App Authentication failure at: " + dateFormat.format(new Date()));
-    failProcess = true;
-    return failProcess;
+    continueProcess = false;
+    return continueProcess;
   }
 }

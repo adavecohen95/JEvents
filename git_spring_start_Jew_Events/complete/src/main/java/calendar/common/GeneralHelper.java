@@ -2,6 +2,8 @@ package calendar.common;
 
 import calendar.models.CalendarEvent;
 import calendar.models.FacebookResposne;
+import calendar.models.facebookEvents.FacebookLocation;
+import calendar.models.facebookEvents.FacebookPlace;
 import calendar.services.facebookServices.FacebookCalendarEvent;
 
 import java.text.DateFormat;
@@ -44,6 +46,7 @@ public class GeneralHelper {
     calendarEvent.startTime = parseISO8601ToDate(facebookCalendarEvent.start_time);
     calendarEvent.endTime = parseISO8601ToDate(facebookCalendarEvent.end_time);
     calendarEvent.facebookEventId = facebookCalendarEvent.id;
+    calendarEvent.location = convertFacebookPlaceToString(facebookCalendarEvent.place);
 
     return calendarEvent;
   }
@@ -52,4 +55,32 @@ public class GeneralHelper {
     DateFormat df1 = new SimpleDateFormat(ISO_8601_DATE_FORMAT);
     return  df1.parse(input);
   }
+
+  public static String convertFacebookPlaceToString(FacebookPlace facebookPlace) {
+
+    StringBuilder location = new StringBuilder();
+
+    if (facebookPlace == null) {
+      return "";
+    }
+
+    location.append(blankString(facebookPlace.name));
+
+    FacebookLocation facebookLocation = facebookPlace.location;
+
+    if (facebookLocation != null) {
+
+      location.append(blankString(facebookLocation.street) + blankString(facebookLocation.city) +
+        blankString(facebookLocation.state) + blankString(facebookLocation.zip) +
+        blankString(facebookLocation.country));
+    }
+
+    return location.toString();
+  }
+  public static String blankString(String value) {
+    if(value == null)
+      return "";
+    return value;
+  }
+
 }

@@ -14,6 +14,6 @@ public class GeneralFailureAction extends AbstractAction {
   public boolean action(Response response) {
     log.debug("General failure at: " + dateFormat.format(new Date()));
     increasedUpdateTime = MINS_IN_SIX_HOURS;
-    return failProcess;
+    return continueProcess;
   }
 }

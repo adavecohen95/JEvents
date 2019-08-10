@@ -14,6 +14,6 @@ public class OauthFailureAction extends AbstractAction {
   public boolean action(Response response) {
     log.debug("Oath failure at: " + dateFormat.format(new Date()));
     increasedUpdateTime = MINS_IN_DAY;
-    return failProcess;
+    return continueProcess;
   }
 }
