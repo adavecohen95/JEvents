@@ -2,7 +2,7 @@ package calendar.models;
 
 import calendar.models.facebookEvents.FacebookErrorResponse;
 import calendar.models.general.Response;
-import calendar.services.facebookServices.FacebookCalendarEvent;
+import calendar.models.facebookEvents.FacebookCalendarEvent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.util.List;

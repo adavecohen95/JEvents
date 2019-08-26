@@ -65,9 +65,7 @@ class GoogleCalendarSync {
     Log.info("AddEventsFromFacebook(# events: " + events.size() + ")");
     eventCache_  = LoadCalendarEvents();
     for (CalendarEvent e : events) {
-      System.out.println(e);
       if (_facebookIdMap.containsKey(e.facebookEventId)) {
-        System.out.println("Found event " + e + " in facebookIdMap");
         // If the event already exists, update details and then continue.
         CalendarEvent existingEvent = _facebookIdMap.get(e.facebookEventId);
         if (!CompareEventDetails(existingEvent, e)) {
@@ -123,7 +121,7 @@ class GoogleCalendarSync {
   }
 
   public void CreateGoogleEvent(CalendarEvent event) throws IOException {
-    System.out.println("Creating new event: " + event + ", title: " + event.title);
+    Log.info("Creating new event: " + event.title);
     Event e = new Event();
     e.setSummary(event.title);
     e.setDescription(event.description);

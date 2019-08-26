@@ -37,9 +37,9 @@ public class FacebookGraphService {
   private Map<String, String> _parameters;
 
   public FacebookGraphService(String authToken, String graphUrl, String userId, Map<String, String> parameters) {
-    this._authToken = authToken;
-    this._graphUrl = String.format(graphUrl, userId);
-    this._parameters = parameters;
+    _authToken = authToken;
+    _graphUrl = String.format(graphUrl, userId);
+    _parameters = parameters;
   }
 
   /**
@@ -58,13 +58,13 @@ public class FacebookGraphService {
         fbURI.addParameter(key, _parameters.get(key));
       });
 
-      System.out.println("[INFO] Facebook GET URL: " + fbURI.toString());
+      log.info("[INFO] Facebook GET URL: " + fbURI.toString());
       return new URL(fbURI.toString());
     } catch (URISyntaxException e) {
-      System.out.println("[EXCEPTION] Failed to form a URI Object from input");
+      log.debug("[EXCEPTION] Failed to form a URI Object from input");
       throw e;
     } catch (MalformedURLException e) {
-      System.out.println("[EXCEPTION] Failed to form a URL Object from input");
+      log.debug("[EXCEPTION] Failed to form a URL Object from input");
       throw e;
     }
   }
@@ -76,6 +76,11 @@ public class FacebookGraphService {
    * @throws IOException
    */
   public FacebookResposne getResponse() throws URISyntaxException, IOException {
+
+    if(_authToken.equals("PLACEHOLDER")) {
+      log.error("INSERT A VALID FACEBOOK AUTH TOKEN");
+      return null;
+    }
 
     Gson gson = new Gson();
     FacebookResposne facebookResposne = null;
@@ -97,21 +102,16 @@ public class FacebookGraphService {
       facebookResposne = gson.fromJson(output, FacebookResposne.class);
 
 
-    log.info("ResponseCode: " + responseCode);
+      log.info("ResponseCode: " + responseCode);
 
       con.disconnect();
     } catch (IOException e) {
-      System.out.println("[EXCEPTION] Failed to create a URL object or failed to get get output from facebook.");
-      System.out.println("\t\t Check to make sure the auth token is correct.");
-      System.out.println("\t\t Response Code: " + responseCode);
+      log.debug("[EXCEPTION] Failed to create a URL object or failed to get get output from facebook.");
+      log.debug("\t\t Check to make sure the auth token is correct.");
+      log.debug("\t\t Response Code: " + responseCode);
       throw e;
     }
 
     return facebookResposne;
-  }
-  public static void main(String args[]) throws IOException, URISyntaxException {
-    FacebookEventService facebookEventService = FacebookEventServiceFactory.createInstance();
-    System.out.println(new Gson().toJson(facebookEventService.getEvents()));
-
   }
 }

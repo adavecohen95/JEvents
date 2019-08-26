@@ -2,10 +2,9 @@ package UnitTests.Calendar.jobs;
 
 import calendar.jobs.CalendarJob;
 import calendar.services.GoogleCalendarService;
-import calendar.services.facebookServices.FacebookCalendarEvent;
+import calendar.models.facebookEvents.FacebookCalendarEvent;
 import calendar.services.facebookServices.FacebookEventService;
 import calendar.factories.FacebookErrorsFactory;
-import calendar.models.CalendarEvent;
 import calendar.models.FacebookResposne;
 import calendar.models.facebookEvents.FacebookErrorResponse;
 import calendar.util.FacebookErrors;

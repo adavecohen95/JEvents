@@ -36,7 +36,6 @@ public class CalendarScheduler extends AbstractScheduler implements SchedulingCo
   @Bean
   public Executor taskExecutor() {
     return Executors.newScheduledThreadPool(NUM_THREADS);
-
   }
 
   @Override

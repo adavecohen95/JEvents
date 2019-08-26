@@ -4,12 +4,11 @@ import calendar.models.CalendarEvent;
 import calendar.models.FacebookResposne;
 import calendar.models.facebookEvents.FacebookLocation;
 import calendar.models.facebookEvents.FacebookPlace;
-import calendar.services.facebookServices.FacebookCalendarEvent;
+import calendar.models.facebookEvents.FacebookCalendarEvent;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

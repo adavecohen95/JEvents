@@ -16,8 +16,8 @@ public abstract class AbstractAction {
   public static final int STANDARD_UPDATE_TIME = 30;
 
   protected static int increasedUpdateTime = 0;
-  protected static final int updateUnit = Calendar.SECOND;
-  protected static boolean continueProcess = false;
+  protected static final int updateUnit = Calendar.MINUTE;
+  protected static boolean continueProcess = true;
 
   protected static final Logger log = LoggerFactory.getLogger(AbstractAction.class);
   protected static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");

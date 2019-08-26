@@ -1,4 +1,4 @@
-package calendar.services.facebookServices;
+package calendar.models.facebookEvents;
 
 import calendar.models.facebookEvents.FacebookPlace;
 import com.google.gson.Gson;

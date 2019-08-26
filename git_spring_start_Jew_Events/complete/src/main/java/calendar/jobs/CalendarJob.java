@@ -53,7 +53,7 @@ public class CalendarJob {
              convertToCalendarEvents(facebookResposne));
 
    } catch(Exception e) {
-     log.debug("Job caught an exception " + e.getMessage());
+     log.debug("Job caught an exception ",e);
      e.printStackTrace();
      return false;
    }
