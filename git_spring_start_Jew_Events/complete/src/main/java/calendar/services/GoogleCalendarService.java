@@ -54,6 +54,10 @@ class GoogleCalendarSync {
             .setOrderBy("startTime")
             .setSingleEvents(true)
             .execute();
+    List<Event> results = events.getItems();
+    for (Event e : results) {
+      _eventRecoveryMap.put(e.getSummary() + e.getDescription(), e);
+    }
     return events.getItems();
   }
 
@@ -64,6 +68,13 @@ class GoogleCalendarSync {
     Log.info("AddEventsFromFacebook(# events: " + events.size() + ")");
     eventCache_ = LoadCalendarEvents();
     for (CalendarEvent e : events) {
+      if (_eventRecoveryMap.containsKey(e.title + e.description)) {
+        Event rawEvent = _eventRecoveryMap.get(e.title + e.description);
+        e.googleEventId = rawEvent.getId();
+        e.googleEventEtag = rawEvent.getEtag();
+        e.googleEventUrl = rawEvent.getHtmlLink();
+        _facebookIdMap.put(e.facebookEventId, e);
+      }
       if (_facebookIdMap.containsKey(e.facebookEventId)) {
         // If the event already exists, update details and then continue.
         CalendarEvent existingEvent = _facebookIdMap.get(e.facebookEventId);
@@ -164,6 +175,9 @@ class GoogleCalendarSync {
 
   // facebook id -> event.
   private HashMap<Long, CalendarEvent> _facebookIdMap;
+  // "title" + "description" used to detect pre-existing events to prevent
+  // duplicates.
+  private HashMap<String, Event> _eventRecoveryMap;
   private Calendar _calendar;
   private String _calendarId;
 }
