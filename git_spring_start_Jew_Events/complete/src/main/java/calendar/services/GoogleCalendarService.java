@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.*;
-
 import org.mortbay.log.Log;
 import org.springframework.core.io.ClassPathResource;
 
@@ -63,7 +62,7 @@ class GoogleCalendarSync {
   // Events with facebook information get added to the GoogleCalendarSync, which
   public void AddEventsFromFacebook(List<CalendarEvent> events) throws IOException {
     Log.info("AddEventsFromFacebook(# events: " + events.size() + ")");
-    eventCache_  = LoadCalendarEvents();
+    eventCache_ = LoadCalendarEvents();
     for (CalendarEvent e : events) {
       if (_facebookIdMap.containsKey(e.facebookEventId)) {
         // If the event already exists, update details and then continue.
@@ -84,6 +83,21 @@ class GoogleCalendarSync {
     }
   }
 
+  // First compares by Etag. Then tries ID and finally the HTML link if the
+  // former methods don't work. Returns false if no method works.
+  private boolean compareEvents(Event a, CalendarEvent b) {
+    if ((a.getEtag() != null) && (b.googleEventEtag != null)) {
+      return a.getEtag().compareTo(b.googleEventEtag) == 0;
+    }
+    if ((a.getId() != null) && (b.googleEventId != null)) {
+      return a.getId().compareTo(b.googleEventId) == 0;
+    }
+    if ((a.getHtmlLink() != null) && (b.googleEventUrl != null)) {
+      return a.getHtmlLink().compareTo(b.googleEventUrl) == 0;
+    }
+    return false;
+  }
+
   private void UpdateGoogleEvent(CalendarEvent event) throws IOException {
     // Find the google event corresponding to this event and replace it with the
     // new event details.
@@ -92,13 +106,13 @@ class GoogleCalendarSync {
     }
 
     if (eventCache_.isEmpty()) {
-
       System.out.println("No upcoming events found. Didn't update anything");
       return;
     }
+
     System.out.println("Upcoming events");
     for (Event e : eventCache_) {
-      if (e.getId().compareTo(event.googleEventId) == 0) {
+      if (compareEvents(e, event)) {
         EventDateTime startTime = new EventDateTime();
         startTime.setDateTime(new DateTime(event.startTime));
         EventDateTime endTime = new EventDateTime();
@@ -144,7 +158,8 @@ class GoogleCalendarSync {
     return (e1.startTime.hashCode() == e2.startTime.hashCode())
         && (e1.endTime.hashCode() == e2.endTime.hashCode())
         && e1.description.compareTo(e2.description) == 0
-        && e1.title.compareTo(e2.title) == 0 && e1.location.equals(e2.location);
+        && e1.title.compareTo(e2.title) == 0
+        && e1.location.equals(e2.location);
   }
 
   // facebook id -> event.
@@ -189,7 +204,7 @@ public class GoogleCalendarService {
    */
   private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR);
 
-  private static final String CREDENTIALS_FILE_PATH = "resources/credentials.json";
+  private static final String CREDENTIALS_FILE_PATH = "credentials.json";
 
   /**
    * Creates an authorized Credential object.
@@ -235,7 +250,9 @@ public class GoogleCalendarService {
 
   public void handleAuthCode(String code) {
     try {
-      flow_.createAndStoreCredential(flow_.newTokenRequest(code).setRedirectUri("http://localhost:8080/sync").execute(), "user");
+      flow_.createAndStoreCredential(
+          flow_.newTokenRequest(code).setRedirectUri("http://localhost:8080/sync").execute(),
+          "user");
     } catch (IOException e) {
       System.out.println("Unable to create credential from received authorization code: " + e);
       return;
