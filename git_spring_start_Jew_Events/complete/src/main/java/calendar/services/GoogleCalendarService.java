@@ -55,6 +55,7 @@ class GoogleCalendarSync {
             .setSingleEvents(true)
             .execute();
     List<Event> results = events.getItems();
+    _eventRecoveryMap = new HashMap<String, Event>();
     for (Event e : results) {
       _eventRecoveryMap.put(e.getSummary() + e.getDescription(), e);
     }
