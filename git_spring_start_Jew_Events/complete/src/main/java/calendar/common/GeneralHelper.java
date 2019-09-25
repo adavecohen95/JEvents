@@ -51,6 +51,9 @@ public class GeneralHelper {
   }
 
   private static Date parseISO8601ToDate(String input) throws ParseException {
+    if(input == null)
+      return null;
+
     DateFormat df1 = new SimpleDateFormat(ISO_8601_DATE_FORMAT);
     return  df1.parse(input);
   }

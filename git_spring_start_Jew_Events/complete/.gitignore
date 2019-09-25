@@ -23,3 +23,4 @@ complete.iml
 complete.ipr
 complete.iws
 tokens/
+src/main/resources/credentials.json
