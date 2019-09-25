@@ -147,6 +147,10 @@ class GoogleCalendarSync {
   }
 
   public void CreateGoogleEvent(CalendarEvent event) throws IOException {
+    if ((event.endTime == null) || (event.startTime == null)) {
+      Log.warn("Unable to create new event due to null start or end time. Event name: " + event.title);
+      return;
+    }
     Log.info("Creating new event: " + event.title);
     Event e = new Event();
     e.setSummary(event.title);
