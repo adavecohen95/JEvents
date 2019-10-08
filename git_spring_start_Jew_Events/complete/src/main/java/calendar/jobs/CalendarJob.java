@@ -55,7 +55,6 @@ public class CalendarJob {
    } catch(Exception e) {
      log.debug("Job caught an exception ",e);
      e.printStackTrace();
-     return false;
    }
 
    return true;

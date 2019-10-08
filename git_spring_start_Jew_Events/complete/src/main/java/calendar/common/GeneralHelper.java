@@ -47,12 +47,16 @@ public class GeneralHelper {
     calendarEvent.facebookEventId = facebookCalendarEvent.id;
     calendarEvent.location = convertFacebookPlaceToString(facebookCalendarEvent.place);
 
+    if(calendarEvent.startTime == null || calendarEvent.endTime == null)
+      throw new ParseException("Start and End could not parse at event titled: " + calendarEvent.title,0);
+
     return calendarEvent;
   }
 
   private static Date parseISO8601ToDate(String input) throws ParseException {
+
     if(input == null)
-      return null;
+        return null;
 
     DateFormat df1 = new SimpleDateFormat(ISO_8601_DATE_FORMAT);
     return  df1.parse(input);
